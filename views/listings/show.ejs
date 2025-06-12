@@ -194,10 +194,11 @@
             </small>
           </div>
           <p
-            class="starability-result card-text"
+            class="starability-result card-text mt-1"
             data-rating="<%=review.rating %>"
           ></p>
-          <p class="card-text"><%= review.comment %></p>
+          <p class="card-text mb-2"><%= review.comment %></p>
+          <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
           <form
             class="mb-3"
             method="POST"
@@ -205,6 +206,7 @@
           >
             <button class="btn btn-sm btn-dark">Delete</button>
           </form>
+          <% } %>
         </div>
       </div>
       <%} %>
