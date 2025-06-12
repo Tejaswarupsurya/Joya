@@ -1,0 +1,77 @@
+<% layout("./layouts/boilerplate")-%>
+<div class="container row mt-3">
+    <div class="col-8 offset-2">
+        <h3>Fill Details</h3>
+        <form method="POST" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input name="listing[title]" class="form-control" placeholder="Enter Title" type="text" required>
+                <div class="valid-feedback">Great!</div>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea name="listing[description]" class="form-control" placeholder="Enter Description" required></textarea>
+                <div class="invalid-feedback">Enter a short Description</div>
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Upload Image</label>
+                <input name="listing[image]" class="form-control" type="file" required>
+                <div class="invalid-feedback">Image is Required!</div>
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Select a Category</label>
+                <select name="listing[category]" class="form-select" required>
+                    <option selected value="Hotel">Hotel</option>
+                    <option value="Beach">Beach</option>
+                    <option value="Lakefront">Lakefront</option>
+                    <option value="Resort">Resort</option>
+                    <option value="Lakefront">Villa</option>
+                    <option value="Apartment">Apartment</option>
+                    <option value="Homestay">Homestay</option>
+                    <option value="Terrain">Terrain</option>
+                    <option value="Cottage">Cottage</option>
+                    <option value="Ski Resort">Ski Resort</option>
+                </select>    
+            </div>
+            <div class="mb-3">
+                <label for="facilities" class="form-label fw-bold">Facilities</label>
+                <% for(facility of facilitiesList){ %>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="checkbox"
+                      name="listing[facilities]"
+                      value="<%= facility %>"
+                      id="facility-<%= facility.replace(/\s+/g, '-') %>"
+                      <%= typeof listing !== "undefined" && listing.facilities && listing.facilities.includes(facility) ? "checked" : "" %>
+                    >
+                    <label class="form-check-label" role="button" for="facility-<%= facility.replace(/\s+/g, '-') %>" ><%= facility %></label>
+                  </div>
+                <% }; %>
+            </div>
+            <div class="row">
+                <div class="mb-3 col-md-4">
+                    <label for="price" class="form-label">Price</label>
+                    <input name="listing[price]" class="form-control" placeholder="Enter Price" type="number" required>
+                    <div class="invalid-feedback">Price should be valid!</div>
+                </div>
+                <div class="mb-3 col-md-8">
+                    <label for="country" class="form-label">Country</label>
+                    <input name="listing[country]" class="form-control" placeholder="Enter Country" type="text" required>
+                    <div class="invalid-feedback">Country should be valid!</div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input name="listing[location]"class="form-control" placeholder="Enter Location" type="text" required>
+                <div class="invalid-feedback">Location should be valid!</div>
+                <small class="mt-1 text-warning"><i class="bi bi-exclamation-triangle-fill me-1"></i>Note: Enter a valid Location in <span style="text-decoration: underline; font-size: medium;">Location, Country</span> Format Only!</small>
+            </div>
+            <div class="d-flex justify-content-between align-items-center ">
+                <button class="btn btn-color">Add Now</button>
+                <a href="/listings" class="text-muted go-back"><i class="bi bi-caret-left-fill"></i>Go Back</a>
+              </div>
+            <br><br>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,91 @@
+<nav class="navbar navbar-expand-md bg-body-light border-bottom custom-sticky sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand mt-0" href="/listings">
+      <img
+        src="/assets/logo.png"
+        alt="Joya"
+        class="img-fluid"
+        style="max-height: 70px"
+      />
+    </a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div
+      class="collapse navbar-collapse"
+      id="navbarNavAltMarkup"
+      style="background-color: white"
+    >
+      <div class="navbar-nav">
+        <a class="nav-link underline-slide" href="/listings">Explore</a>
+      </div>
+      <% if (!["/login", "/signup", "/listings/new","/forgot","/update-password"].includes(path)) { %>
+      <div class="navbar-nav ms-auto">
+        <form class="d-flex" role="search">
+          <input
+            class="form-control me-2 search-input"
+            type="search"
+            id="search"
+            placeholder="Search destination"
+          />
+          <button class="btn search-btn" type="submit">
+            <i class="bi bi-search me-2"></i>
+            <div>Search</div>
+          </button>
+        </form>
+      </div>
+      <% } %>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link underline-slide" href="/listings/new"
+          >Add your Home</a
+        >
+        <% if(!currUser) { %>
+        <a class="nav-link signup" href="/signup"><b>Sign Up</b></a>
+        <a class="nav-link login" href="/login"><b>Log In</b></a>
+        <% } %> <% if(currUser) { %>
+        <div class="d-flex align-items-center gap-2 me-3">
+          <div class="dropdown">
+            <div
+              class="user-avatar d-flex align-items-center justify-content-center text-white fw-bold"
+              id="userDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              title="<%= currUser.username %>"
+            >
+              <%= currUser.username.charAt(0).toUpperCase() %>
+            </div>
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="userDropdown"
+            >
+              <li>
+                <p class="dropdown-item">
+                  <i class="bi bi-person-circle me-2"></i><%= currUser.username
+                  %>
+                </p>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item" href="/update-password">
+                  <i class="bi bi-shield-lock me-2"></i>Change Password
+                </a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a class="dropdown-item text-danger" href="/logout">
+                  <i class="fa-solid fa-right-from-bracket me-2"></i>Log out
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>

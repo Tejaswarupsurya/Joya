@@ -1,0 +1,72 @@
+<% layout("./layouts/boilerplate")-%>
+<body>
+  <div class="d-flex mb-3 align-items-center justify-content-center">
+    <div class="category-scroll d-flex overflow-auto mt-1 px-3 py-2 gap-4">
+      <% categoryList.forEach(cat => { %>
+      <button
+        class="btn d-flex flex-column align-items-center category-btn underline-slide border-0 px-2"
+        data-category="<%= cat %>"
+      >
+        <i
+          class="fa-solid fa-<%= categoryIcons[cat] || 'tag' %> fs-8 mb-1 text-black"
+        ></i>
+        <span class="small"><%= cat %></span>
+
+      </button>
+      <% }) %>
+    </div>
+    <div
+      class="form-check form-switch form-check-reverse d-none d-lg-flex align-items-center justify-content-center ms-2 gap-2 taxSwitch"
+    >
+      <label class="form-check-label" for="taxToggle">Include Tax</label>
+      <input
+        class="form-check-input"
+        type="checkbox"
+        role="switch"
+        id="taxToggle"
+      />
+    </div>  
+  </div>
+
+  <div
+    id="listings-container"
+    class="row row-cols-lg-4 row-cols-md-2 row-cols-sm-1 g-4"
+  >
+    <% if (allListings.length === 0) { %>
+    <div class="offset-4 alert alert-warning text-center fw-bold">
+      <p class="mt-3">No results found!</p>
+    </div>
+    <% } %> <% for(let listing of allListings){%>
+    <a href="/listings/<%= listing._id %>" style="text-decoration: none">
+      <div class="card listing-card col">
+        <img
+          src="<%= listing.image.url %>"
+          class="card-img-top"
+          alt="<%= listing.image.filename %>"
+          loading="lazy"
+        />
+        <div class="card-img-overlay"></div>
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between">
+            <p class="card-text mt-1 mb-1">
+              <b><%= listing.title %></b>
+            </p>
+            <p class="card-text mt-1 mb-1 me-3 small text-muted">
+              <i class="bi bi-star-fill text-warning"></i>
+              <%= listing.avgRating?.toFixed(1) || "N/A" %> 
+            </p>
+          </div>
+          <p
+            class="card-text listing-price mb-0"
+            data-original-price="<%= listing.price %>"
+          >
+            &#8377;<%= listing.price.toLocaleString("en-IN") %>/night.
+          </p>
+        </div>
+      </div>
+    </a>
+    <% }%>
+  </div>
+</body>
+
+<script src="/js/search.js"></script>
