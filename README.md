@@ -1,6 +1,6 @@
 # 🌍 Joya — Discover, Host & Review Artisan Stays
 
-> A full-stack travel listing app to explore, list, and review unique homestays and local experiences — featuring live search, filters, map-based discovery, secure auth, and real reviews.
+> A full-stack travel listing app to explore, list, and review unique homestays and local experiences — featuring live search, filters, map-based discovery, secure authorization, and real reviews.
 
 🛠️ Built solo with ❤️ using Node.js, Express, MongoDB, Passport.js & Bootstrap — because teammates were on vacation 🥲 (open to collabs!).
 
@@ -174,7 +174,7 @@ Joya/
 Built fully solo — but collaboration always welcome!
 Want to co-build the next big open-source thing or just help improve Joya?
 
-Ping me — I’d love to work with someone as curious as me 🔥
+>Ping me — I’d love to work with someone as curious as me 🔥
 
 Pull requests welcome. For major changes, open an issue first.
 
