@@ -1,3 +1,5 @@
+<img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=D9BED1&height=120&section=header" alt="header"/>
+
 # 🌍 Joya — Discover, Host & Review Artisan Stays
 
 > A full-stack travel listing app to explore, list, and review unique homestays and local experiences — featuring live search, filters, map-based discovery, secure authorization, and real reviews.
@@ -187,5 +189,6 @@ This project is licensed under the **MIT License**.
 
 ## ✨ Author
 Built with ❤️ by Tejaswarup Surya [LinkedIn](https://www.linkedin.com/in/surya-tejaswarup-a12461280/)
+<img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=D9BED1&height=120&section=footer" alt="footer"/>
 
 
