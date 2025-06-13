@@ -120,7 +120,14 @@ body {
 @media (max-width: 576px) {
   .show-img {
     height: 45vh; 
-    object-fit: cover; 
+    object-fit: cover;
+    .go-back {
+      font-size: 0.9rem;
+    }
+  
+    .btn-color {
+      width: 100%;
+    } 
   }
 }
 .show-card {
