@@ -69,7 +69,10 @@
   - Joi validation to prevent bad data
   - Mongo session store for scalability
   - Method override, clean REST routes
-
+   
+- 📁 **Strict MVC Structure**
+  - Clear separation of logic: Models, Views, Controllers
+  
 - 🔐 **Security & SEO**
   - Helmet, compression, structured markup
   - `robots.txt` and `sitemap.xml` ready
