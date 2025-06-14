@@ -198,7 +198,7 @@
             data-rating="<%=review.rating %>"
           ></p>
           <p class="card-text mb-2"><%= review.comment %></p>
-          <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
+          <% if(currUser && review.author._id.equals(currUser._id)) { %>
           <form
             class="mb-3"
             method="POST"
