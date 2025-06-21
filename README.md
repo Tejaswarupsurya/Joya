@@ -26,7 +26,6 @@
 
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
-- [UI Previews](#-ui-previews)
 - [Getting Started](#-getting-started)
 - [Project Structure](#-project-structure)
 - [User Roles](#-user-roles)
@@ -61,15 +60,19 @@
   - Cloudinary storage with on-the-fly previews
   - Listing-specific images, compressed for performance
 
-- 📱 **Mobile-First Design**
-  - Fully responsive — built with Bootstrap 5
-  - Optimized UX across all screen sizes
-
+- 📁 **Strict MVC Structure**
+  - Clear separation of logic: Models, Views, Controllers
+  
 - ⚙️ **Backend Superpowers**
   - Joi validation to prevent bad data
   - Mongo session store for scalability
   - Method override, clean REST routes
-
+    
+- 📱 **Mobile-First Design**
+  - Fully responsive — built with Bootstrap 5
+  - Optimized UX across all screen sizes
+  - Skeleton loader UI 
+  
 - 🔐 **Security & SEO**
   - Helmet, compression, structured markup
   - `robots.txt` and `sitemap.xml` ready
@@ -88,16 +91,6 @@
 | Mapping      | Mapbox SDK |
 | Dev Tools    | Nodemon, dotenv, connect-flash |
 | Security     | Helmet, Joi, compression |
-
----
-
-## 💻 UI Previews
-
-> *(Add your screenshots/GIF here once ready)*
-
-| Home | Filters | Map | Reviews |
-|------|---------|------|---------|
-| ![](public/screenshots/home.png) | ![](public/screenshots/filters.png) | ![](public/screenshots/map.png) | ![](public/screenshots/review.png) |
 
 ---
 
