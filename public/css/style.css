@@ -84,6 +84,8 @@ body {
 
 .listing-card {
   border: none !important;
+  will-change: transform;
+  contain: layout paint;
   margin-bottom: 0.5rem;
 }
 .card:hover {
