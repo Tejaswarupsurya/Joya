@@ -7,7 +7,7 @@
     <meta name="keywords" content="hotels, booking, travel, rooms, homestay, villa" />
     <meta name="author" content="Tejaswarup Surya" />
     <meta name="robots" content="index, follow" />
-    <% if (allListings.length > 0) { %>
+    <% if (typeof allListings !== 'undefined' && allListings.length > 0) { %>
       <link 
         rel="preload" 
         as="image" 
