@@ -38,49 +38,55 @@
         </div>
 
         <% if (listing.facilities && listing.facilities.length > 0) { %>
-        <hr />
-        <h5>Facilities</h5>
-        <div class="row">
-          <% for(let facility of listing.facilities) {%>
-          <div class="col-6 d-flex align-items-center gap-2 mb-1">
-            <i
-              class="<%= `bi bi-${facilityIcons[facility] || 'shield-fill-check'} fs-5 text-muted` %>"
-            ></i>
-            <span><%= facility %></span>
+        <div class="card-body pt-0">
+          <hr />
+          <h5>Facilities</h5>
+          <div class="row">
+            <% for(let facility of listing.facilities) {%>
+            <div class="col-6 d-flex align-items-center gap-2 mb-1">
+              <i
+                class="<%= `bi bi-${facilityIcons[facility] || 'shield-fill-check'} fs-5 text-muted` %>"
+              ></i>
+              <span><%= facility %></span>
+            </div>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+
+        <div class="card-body pt-0">
+          <% if (!currUser) { %>
+          <a
+            href="/signup"
+            class="btn btn-color btn-sm rounded-pill book-this-stay px-3 py-2 mt-3"
+            >Book This Stay</a
+          >
+          <% } else if (currUser.role === "user" || currUser.role === "admin") {
+          %>
+          <a
+            href="/listings/<%= listing._id %>/bookings/new"
+            class="btn btn-color btn-sm rounded-pill book-this-stay px-3 py-2 mt-3"
+            >Book This Stay</a
+          >
+          <% } %> <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
+          <div
+            class="btns mt-3 mb-0 d-flex flex-column flex-md-row justify-content-end gap-3"
+          >
+            <a
+              href="/listings/<%= listing._id %>/edit"
+              class="btn btn-color"
+              style="width: 100px"
+              >Edit</a
+            >
+            <form
+              method="POST"
+              action="/listings/<%= listing._id %>?_method=DELETE"
+            >
+              <button class="btn btn-dark" style="width: 100px">Delete</button>
+            </form>
           </div>
           <% } %>
         </div>
-        <% } %> <% if (!currUser) { %>
-        <a
-          href="/signup"
-          class="btn btn-color btn-sm rounded-pill book-this-stay px-3 py-2 mt-3"
-          >Book This Stay</a
-        >
-        <% } else if (currUser.role === "user" || currUser.role === "admin") {
-        %>
-        <a
-          href="/listings/<%= listing._id %>/bookings/new"
-          class="btn btn-color btn-sm rounded-pill book-this-stay px-3 py-2 mt-3"
-          >Book This Stay</a
-        >
-        <% } %> <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
-        <div
-          class="btns mt-3 mb-0 d-flex flex-column flex-md-row justify-content-end gap-3"
-        >
-          <a
-            href="/listings/<%= listing._id %>/edit"
-            class="btn btn-color"
-            style="width: 100px"
-            >Edit</a
-          >
-          <form
-            method="POST"
-            action="/listings/<%= listing._id %>?_method=DELETE"
-          >
-            <button class="btn btn-dark" style="width: 100px">Delete</button>
-          </form>
-        </div>
-        <% } %>
       </div>
 
       <div class="col-12">
@@ -248,8 +254,8 @@
       </div>
     </div>
   </div>
-
-  <script src="/js/map.js"></script>
-  <script src="/js/search.js"></script>
-  <script src="/js/review.js"></script>
 </div>
+
+<script src="/js/map.js"></script>
+<script src="/js/search.js"></script>
+<script src="/js/review.js"></script>

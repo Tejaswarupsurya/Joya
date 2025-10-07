@@ -326,6 +326,12 @@ body {
   padding-right: 0px !important;
 }
 
+/* Override: Ensure proper content padding for show card */
+.show-card .card-body {
+  padding: 1.5rem !important;
+  margin: 0;
+}
+
 .btn-color {
   background-color: #fc385c !important;
   color: white !important;
