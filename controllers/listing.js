@@ -19,27 +19,210 @@ const { getAvgRating, getStarBreakdown } = require("../utils/review.js");
 const Listing = require("../models/listing.js");
 
 module.exports.index = async (req, res) => {
-  const { q, category } = req.query;
-  const filter = {};
-  if (q) {
-    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const regex = new RegExp("^" + escaped, "i");
-    filter.$or = [{ title: regex }, { location: regex }, { country: regex }];
+  const { q, category, minPrice, maxPrice, facilities, sortBy } = req.query;
+  let filter = {};
+  let sort = {};
+
+  // Enhanced search logic
+  if (q && q.trim()) {
+    const searchTerm = q.trim();
+    const words = searchTerm.split(/\s+/).filter((word) => word.length > 0);
+
+    // Create flexible search patterns
+    const searchConditions = [];
+
+    // For each word, create partial match conditions
+    words.forEach((word) => {
+      const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const wordRegex = new RegExp(escapedWord, "i");
+
+      searchConditions.push(
+        { title: wordRegex },
+        { description: wordRegex },
+        { location: wordRegex },
+        { country: wordRegex },
+        { facilities: { $in: [wordRegex] } }
+      );
+    });
+
+    // Exact phrase matching (higher priority)
+    const exactRegex = new RegExp(
+      searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+      "i"
+    );
+    const exactConditions = [
+      { title: exactRegex },
+      { description: exactRegex },
+      { location: exactRegex },
+      { country: exactRegex },
+    ];
+
+    filter.$or = [...exactConditions, ...searchConditions];
   }
-  if (category) {
+
+  // Category filtering
+  if (category && category !== "all") {
     filter.category = category;
   }
-  const allListings = await Listing.find(filter).populate("reviews");
+
+  // Price range filtering
+  if (minPrice || maxPrice) {
+    filter.price = {};
+    if (minPrice) filter.price.$gte = parseInt(minPrice);
+    if (maxPrice) filter.price.$lte = parseInt(maxPrice);
+  }
+
+  // Facilities filtering
+  if (facilities) {
+    const facilityArray = Array.isArray(facilities) ? facilities : [facilities];
+    filter.facilities = { $all: facilityArray };
+  }
+
+  // Sorting logic
+  switch (sortBy) {
+    case "price_low":
+      sort.price = 1;
+      break;
+    case "price_high":
+      sort.price = -1;
+      break;
+    case "rating":
+      // We'll handle this after population
+      break;
+    case "newest":
+      sort._id = -1;
+      break;
+    default:
+      // Default sorting by relevance (if search query) or newest
+      if (q) {
+        // For search queries, we'll handle relevance scoring later
+      } else {
+        sort._id = -1;
+      }
+  }
+
+  const allListings = await Listing.find(filter).populate("reviews").sort(sort);
+  // Calculate average ratings and relevance scores
   allListings.forEach((listing) => {
     listing.avgRating = getAvgRating(listing.reviews);
+
+    // Calculate search relevance score if there's a query
+    if (q && q.trim()) {
+      listing.relevanceScore = calculateRelevanceScore(listing, q.trim());
+    }
   });
-  
+
+  // Sort by rating if requested (needs to be done after rating calculation)
+  if (sortBy === "rating") {
+    allListings.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+  } else if (q && q.trim() && !sortBy) {
+    // Sort by relevance for search queries
+    allListings.sort(
+      (a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0)
+    );
+  }
+
+  // Get user's wishlist if logged in
+  let userWishlist = [];
+  if (req.user) {
+    const User = require("../models/user.js");
+    const user = await User.findById(req.user._id).select("wishlist");
+    userWishlist = user.wishlist.map((id) => id.toString());
+  }
+
+  // Search analytics (log search for insights)
+  if (q && q.trim()) {
+    const searchAnalytics = require("../utils/searchAnalytics.js");
+    searchAnalytics.logSearch(q.trim(), allListings.length, category);
+    console.log(`Search performed: "${q}" - ${allListings.length} results`);
+  }
+
   res.render("./listings/index.ejs", {
     allListings,
     categoryList,
     categoryIcons,
+    userWishlist,
+    currUser: req.user,
+    searchQuery: q || "",
+    appliedFilters: {
+      category: category || "all",
+      minPrice: minPrice || "",
+      maxPrice: maxPrice || "",
+      facilities: facilities || [],
+      sortBy: sortBy || "relevance",
+    },
+    totalResults: allListings.length,
   });
 };
+
+// Helper function to calculate search relevance score
+function calculateRelevanceScore(listing, query) {
+  let score = 0;
+  const queryLower = query.toLowerCase();
+  const words = queryLower.split(/\s+/);
+
+  // Title matches (highest priority)
+  if (listing.title && listing.title.toLowerCase().includes(queryLower)) {
+    score += 10;
+  }
+  words.forEach((word) => {
+    if (listing.title && listing.title.toLowerCase().includes(word)) {
+      score += 5;
+    }
+  });
+
+  // Location matches (high priority)
+  if (listing.location && listing.location.toLowerCase().includes(queryLower)) {
+    score += 8;
+  }
+  words.forEach((word) => {
+    if (listing.location && listing.location.toLowerCase().includes(word)) {
+      score += 4;
+    }
+  });
+
+  // Country matches
+  if (listing.country && listing.country.toLowerCase().includes(queryLower)) {
+    score += 6;
+  }
+
+  // Description matches
+  if (
+    listing.description &&
+    listing.description.toLowerCase().includes(queryLower)
+  ) {
+    score += 3;
+  }
+  words.forEach((word) => {
+    if (
+      listing.description &&
+      listing.description.toLowerCase().includes(word)
+    ) {
+      score += 1;
+    }
+  });
+
+  // Facilities matches
+  if (listing.facilities && listing.facilities.length > 0) {
+    listing.facilities.forEach((facility) => {
+      if (facility.toLowerCase().includes(queryLower)) {
+        score += 2;
+      }
+      words.forEach((word) => {
+        if (facility.toLowerCase().includes(word)) {
+          score += 1;
+        }
+      });
+    });
+  }
+
+  // Boost score based on rating (quality factor)
+  if (listing.avgRating) {
+    score += listing.avgRating * 0.5;
+  }
+
+  return score;
+}
 
 module.exports.renderNewForm = (req, res) => {
   res.render("./listings/new.ejs", { facilitiesList });

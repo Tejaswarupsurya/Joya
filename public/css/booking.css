@@ -1,0 +1,268 @@
+/**
+ * Booking Styles - Form styling and Flatpickr customization
+ */
+
+/* ========== Booking Form Styles ========== */
+.booking-form {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.booking-form .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.booking-form .form-control {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  transition: border-color 0.2s ease;
+}
+
+.booking-form .form-control:focus {
+  border-color: #fc385c;
+  box-shadow: 0 0 0 0.2rem rgba(252, 56, 92, 0.25);
+}
+
+.booking-form .form-text {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* ========== Booking Cards ========== */
+.booking-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.booking-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.booking-card .card-body {
+  padding: 1.5rem;
+}
+
+.booking-status-badge {
+  font-size: 0.85rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* ========== Flatpickr Customization ========== */
+.flatpickr-calendar {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  border: none !important;
+}
+
+.flatpickr-months {
+  background: #fc385c !important;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.flatpickr-month {
+  color: white !important;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  color: white !important;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  color: #f8f9fa !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  background: #fc385c !important;
+  color: white !important;
+}
+
+.flatpickr-current-month input.cur-year {
+  color: white !important;
+  background: transparent !important;
+}
+
+/* Day styles */
+.flatpickr-day {
+  border-radius: 6px !important;
+  margin: 1px !important;
+}
+
+.flatpickr-day.available {
+  cursor: pointer;
+  position: relative;
+  background: #e8f5e8 !important;
+  border: 1px solid #28a745 !important;
+  color: #155724 !important;
+}
+
+.flatpickr-day.available:hover {
+  background: #d4edda !important;
+  border-color: #1e7e34 !important;
+  transform: scale(1.05);
+}
+
+.flatpickr-day.disabled,
+.flatpickr-day.flatpickr-disabled {
+  background: #ffebeb !important;
+  color: #721c24 !important;
+  border: 1px solid #f5c6cb !important;
+  cursor: not-allowed !important;
+}
+
+.flatpickr-day.disabled:hover,
+.flatpickr-day.flatpickr-disabled:hover {
+  background: #f8d7da !important;
+  border-color: #f1b0b7 !important;
+}
+
+.flatpickr-day.selected {
+  background: #fc385c !important;
+  border-color: #fc385c !important;
+  color: white !important;
+}
+
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: #fc385c !important;
+  border-color: #fc385c !important;
+  color: white !important;
+}
+
+.flatpickr-day.inRange {
+  background: rgba(252, 56, 92, 0.2) !important;
+  border-color: rgba(252, 56, 92, 0.3) !important;
+  color: #fc385c !important;
+}
+
+/* Tooltip styles */
+.flatpickr-day.available::after,
+.flatpickr-day.disabled::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+.flatpickr-day.available:hover::after,
+.flatpickr-day.disabled:hover::after {
+  opacity: 1;
+}
+
+/* ========== Booking Summary Styles ========== */
+.booking-summary {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.booking-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.booking-detail-item:last-child {
+  border-bottom: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.booking-detail-label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.booking-detail-value {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 768px) {
+  .booking-form {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .flatpickr-calendar {
+    font-size: 14px !important;
+  }
+
+  .booking-card .card-body {
+    padding: 1rem;
+  }
+}
+
+/* ========== Animation Classes ========== */
+.booking-success {
+  animation: bookingPulse 0.6s ease-in-out;
+}
+
+@keyframes bookingPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.booking-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.booking-loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: bookingShimmer 1.5s infinite;
+}
+
+@keyframes bookingShimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}

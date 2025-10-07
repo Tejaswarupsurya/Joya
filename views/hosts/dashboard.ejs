@@ -1,0 +1,573 @@
+<% layout("./layouts/boilerplate")-%>
+
+<!-- Dashboard specific CSS -->
+<link rel="stylesheet" href="/css/dashboard.css" />
+<link rel="stylesheet" href="/css/host-dashboard.css" />
+
+<div class="container-fluid px-4 py-3">
+  <!-- Host Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="row align-items-center">
+      <div class="col-md-8">
+        <div class="d-flex align-items-center">
+          <!-- Host Avatar -->
+          <div class="host-avatar-container me-3">
+            <% if (user.host && user.host.avatar && user.host.avatar.url) { %>
+            <img
+              src="<%= user.host.avatar.url %>"
+              alt="<%= user.username %>"
+              class="host-avatar"
+            />
+            <% } else { %>
+            <div
+              class="host-avatar-placeholder d-flex align-items-center justify-content-center"
+            >
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <% } %>
+          </div>
+          <div>
+            <h1 class="mb-2">
+              Host Dashboard - Welcome, <%= user.username %>!
+            </h1>
+            <p class="mb-0 opacity-75">
+              Manage your properties, track earnings, and provide amazing
+              experiences for your guests.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 text-md-end">
+        <a href="/listings/new" class="btn find-stays-btn">
+          <i class="bi bi-plus-circle me-2"></i>Add New Listing
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Host Stats Cards -->
+  <div class="stats-container">
+    <div class="row g-3">
+      <!-- Total Listings -->
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #6366f1; color: white">
+            <i class="bi bi-house-door"></i>
+          </div>
+          <div class="stat-number" style="color: #6366f1">
+            <%= stats.totalListings %>
+          </div>
+          <p class="stat-label">Total Properties</p>
+        </div>
+      </div>
+
+      <!-- Active Bookings -->
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+          <div class="stat-icon active">
+            <i class="bi bi-calendar-check"></i>
+          </div>
+          <div class="stat-number active"><%= stats.activeBookings %></div>
+          <p class="stat-label">Active Bookings</p>
+        </div>
+      </div>
+
+      <!-- Pending Bookings -->
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+          <div class="stat-icon pending">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <div class="stat-number pending"><%= stats.pendingBookings %></div>
+          <p class="stat-label">Pending Requests</p>
+        </div>
+      </div>
+
+      <!-- Monthly Earnings -->
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: #10b981; color: white">
+            <i class="bi bi-currency-rupee"></i>
+          </div>
+          <div class="stat-number" style="color: #10b981">
+            ₹<%= stats.monthlyEarnings.toLocaleString("en-IN") %>
+          </div>
+          <p class="stat-label">This Month</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance Metrics -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-8">
+      <!-- Recent Bookings Activity -->
+      <div class="stat-card h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title mb-0">
+            <i class="bi bi-activity me-2"></i>Recent Booking Activity
+          </h3>
+          <span class="badge bg-light text-dark"
+            ><%= bookings.recent.length %> Recent</span
+          >
+        </div>
+
+        <% if (bookings.recent.length > 0) { %>
+        <div class="activity-list">
+          <% bookings.recent.forEach((booking, index) => { %>
+          <div
+            class="activity-item <%= index < bookings.recent.length - 1 ? 'border-bottom' : '' %> pb-3 mb-3"
+          >
+            <div class="row align-items-center">
+              <div class="col-md-6">
+                <div class="d-flex align-items-center">
+                  <div class="activity-icon me-3">
+                    <% if (booking.status === 'confirmed') { %>
+                    <i class="bi bi-check-circle text-success"></i>
+                    <% } else if (booking.status === 'pending') { %>
+                    <i class="bi bi-clock text-warning"></i>
+                    <% } else { %>
+                    <i class="bi bi-x-circle text-danger"></i>
+                    <% } %>
+                  </div>
+                  <div>
+                    <strong><%= booking.listing.title %></strong>
+                    <div class="text-muted small">
+                      by <%= booking.user ? booking.user.username :
+                      'UnknownUser' %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 text-center">
+                <div class="small text-muted mb-1">Dates</div>
+                <div
+                  class="d-flex justify-content-center align-items-center gap-2"
+                >
+                  <div class="text-center">
+                    <div class="small text-muted">In</div>
+                    <div class="small fw-bold">
+                      <%= new Date(booking.checkIn).toLocaleDateString('en-IN',
+                      { month: 'short', day: 'numeric' }) %>
+                    </div>
+                  </div>
+                  <div class="text-muted">-</div>
+                  <div class="text-center">
+                    <div class="small text-muted">Out</div>
+                    <div class="small fw-bold">
+                      <%= new Date(booking.checkOut).toLocaleDateString('en-IN',
+                      { month: 'short', day: 'numeric' }) %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3 text-end">
+                <div class="fw-bold text-success">
+                  ₹<%= booking.totalPrice.toLocaleString("en-IN") %>
+                </div>
+                <div class="small text-muted text-capitalize">
+                  <%= booking.status %>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+        <% } else { %>
+        <div class="text-center py-4">
+          <i class="bi bi-calendar-x display-4 text-muted mb-3"></i>
+          <h5 class="text-muted">No Recent Activity</h5>
+          <p class="text-muted">
+            Your booking activity will appear here once guests start booking
+            your properties.
+          </p>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <!-- Quick Stats & Actions -->
+      <div class="stat-card h-100">
+        <h3 class="section-title mb-3">
+          <i class="bi bi-speedometer2 me-2"></i>Performance Overview
+        </h3>
+
+        <!-- Total Earnings -->
+        <div class="performance-item mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">Total Earnings</div>
+              <div class="h4 mb-0 text-success">
+                ₹<%= stats.totalEarnings.toLocaleString("en-IN") %>
+              </div>
+            </div>
+            <i class="bi bi-graph-up-arrow text-success"></i>
+          </div>
+        </div>
+
+        <!-- Completed Bookings -->
+        <div class="performance-item mb-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">Completed Bookings</div>
+              <div class="h4 mb-0"><%= stats.completedBookings %></div>
+            </div>
+            <i class="bi bi-check-circle text-primary"></i>
+          </div>
+        </div>
+
+        <!-- Occupancy Rate -->
+        <div class="performance-item mb-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="text-muted small">Occupancy Rate</div>
+              <div class="h4 mb-0"><%= stats.occupancyRate %>%</div>
+            </div>
+            <i class="bi bi-pie-chart text-info"></i>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <h6 class="mb-2">Quick Actions</h6>
+          <div class="d-grid gap-2">
+            <a href="/listings/new" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-plus-circle me-1"></i>Add Property
+            </a>
+            <a href="/listings" class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-eye me-1"></i>View All Listings
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Properties Section -->
+  <% if (listings.length > 0) { %>
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="section-title mb-0">
+        <i class="bi bi-house-heart me-2"></i>My Properties (<%= listings.length
+        %>)
+      </h2>
+      <div class="d-flex align-items-center gap-2">
+        <% if (listings.length > 3) { %>
+        <span class="text-muted small">View All</span>
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#allPropertiesCollapse"
+          aria-expanded="false"
+          aria-controls="allPropertiesCollapse"
+          id="togglePropertiesBtn"
+        >
+          <i class="bi bi-chevron-down" id="toggleIcon"></i>
+        </button>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Preview Properties (First 3) -->
+    <div class="row g-4 mb-3">
+      <% listings.slice(0, 3).forEach((listing) => { %>
+      <div class="col-lg-4 col-md-6">
+        <div class="property-card">
+          <% if (listing.image && listing.image.url) { %>
+          <img
+            src="<%= listing.image.url %>"
+            class="property-image"
+            alt="<%= listing.title %>"
+          />
+          <% } %>
+
+          <div class="property-content">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <h5 class="property-title mb-0"><%= listing.title %></h5>
+              <% if (listing.avgRating > 0) { %>
+              <span class="text-warning small">
+                <i class="bi bi-star-fill me-1"></i><%=
+                listing.avgRating.toFixed(1) %>
+              </span>
+              <% } else { %>
+              <span class="text-muted small">No reviews</span>
+              <% } %>
+            </div>
+            <p class="property-location">
+              <i class="bi bi-geo-alt me-1"></i><%= listing.location %>, <%=
+              listing.country %>
+            </p>
+
+            <div class="property-stats">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="property-price"
+                  >₹<%= listing.price.toLocaleString("en-IN") %>/night</span
+                >
+                <div class="property-actions">
+                  <a
+                    href="/listings/<%= listing._id %>"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <a
+                    href="/listings/<%= listing._id %>/edit"
+                    class="btn btn-sm btn-outline-secondary"
+                  >
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+
+    <!-- Collapsible All Properties -->
+    <% if (listings.length > 3) { %>
+    <div class="collapse" id="allPropertiesCollapse">
+      <div class="row g-4">
+        <% listings.slice(3).forEach((listing) => { %>
+        <div class="col-lg-4 col-md-6">
+          <div class="property-card">
+            <% if (listing.image && listing.image.url) { %>
+            <img
+              src="<%= listing.image.url %>"
+              class="property-image"
+              alt="<%= listing.title %>"
+            />
+            <% } %>
+
+            <div class="property-content">
+              <div
+                class="d-flex justify-content-between align-items-start mb-2"
+              >
+                <h5 class="property-title mb-0"><%= listing.title %></h5>
+                <% if (listing.avgRating > 0) { %>
+                <span class="text-warning small">
+                  <i class="bi bi-star-fill me-1"></i><%=
+                  listing.avgRating.toFixed(1) %>
+                </span>
+                <% } else { %>
+                <span class="text-muted small">No reviews</span>
+                <% } %>
+              </div>
+              <p class="property-location">
+                <i class="bi bi-geo-alt me-1"></i><%= listing.location %>, <%=
+                listing.country %>
+              </p>
+
+              <div class="property-stats">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="property-price"
+                    >₹<%= listing.price.toLocaleString("en-IN") %>/night</span
+                  >
+                  <div class="property-actions">
+                    <a
+                      href="/listings/<%= listing._id %>"
+                      class="btn btn-sm btn-outline-primary"
+                    >
+                      <i class="bi bi-eye"></i>
+                    </a>
+                    <a
+                      href="/listings/<%= listing._id %>/edit"
+                      class="btn btn-sm btn-outline-secondary"
+                    >
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+  <% } else { %>
+  <!-- Empty State for Properties -->
+  <div class="text-center py-5">
+    <i class="bi bi-house-add display-1 text-muted mb-4"></i>
+    <h3 class="text-muted mb-3">Start Your Hosting Journey!</h3>
+    <p class="text-muted mb-4">
+      You haven't added any properties yet. Add your first listing to start
+      earning.
+    </p>
+    <a href="/listings/new" class="btn btn-primary btn-lg">
+      <i class="bi bi-plus-circle me-2"></i>Add Your First Property
+    </a>
+  </div>
+  <% } %>
+
+  <!-- Booking Management Sections -->
+  <div class="row g-4 mb-4">
+    <!-- Confirmed Bookings (Upcoming/Ongoing) -->
+    <div class="col-lg-6">
+      <div class="stat-card h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title mb-0">
+            <i class="bi bi-check-circle text-success me-2"></i>Confirmed
+            Bookings
+          </h3>
+          <span class="badge bg-success"><%= bookings.active.length %></span>
+        </div>
+
+        <% if (bookings.active.length > 0) { %>
+        <div class="booking-list" style="max-height: 400px; overflow-y: auto">
+          <% bookings.active.forEach((booking) => { %>
+          <div class="booking-item border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <h6 class="mb-1"><%= booking.listing.title %></h6>
+                <p class="text-muted small mb-1">
+                  <i class="bi bi-person me-1"></i><%= booking.user ?
+                  booking.user.username : 'Unknown User' %>
+                </p>
+                <p class="text-muted small mb-1">
+                  <i class="bi bi-calendar3 me-1"></i>
+                  <%= new Date(booking.checkIn).toLocaleDateString('en-IN', {
+                  month: 'short', day: 'numeric', year: 'numeric' }) %> - <%=
+                  new Date(booking.checkOut).toLocaleDateString('en-IN', {
+                  month: 'short', day: 'numeric', year: 'numeric' }) %>
+                </p>
+                <p class="text-muted small mb-0">
+                  <i class="bi bi-people me-1"></i><%= booking.guests %> guests
+                  •
+                  <span class="text-success fw-bold"
+                    >₹<%= booking.totalPrice.toLocaleString("en-IN") %></span
+                  >
+                </p>
+              </div>
+              <div class="text-end">
+                <span class="badge bg-success">Confirmed</span>
+                <div class="mt-1">
+                  <small class="text-muted"
+                    >ID: #<%= booking._id.toString().slice(-10) %></small
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+        <% } else { %>
+        <div class="text-center py-4">
+          <i class="bi bi-calendar-check display-4 text-muted mb-3"></i>
+          <h6 class="text-muted">No Confirmed Bookings</h6>
+          <p class="text-muted small">
+            Upcoming confirmed bookings will appear here.
+          </p>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Pending Bookings -->
+    <div class="col-lg-6">
+      <div class="stat-card h-100">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="section-title mb-0">
+            <i class="bi bi-clock-history text-warning me-2"></i>Pending
+            Requests
+          </h3>
+          <span class="badge bg-warning text-dark"
+            ><%= bookings.pending.length %></span
+          >
+        </div>
+
+        <% if (bookings.pending.length > 0) { %>
+        <div class="booking-list" style="max-height: 400px; overflow-y: auto">
+          <% bookings.pending.forEach((booking) => { %>
+          <div class="booking-item border-bottom pb-3 mb-3">
+            <div class="d-flex justify-content-between align-items-start">
+              <div class="flex-grow-1">
+                <h6 class="mb-1"><%= booking.listing.title %></h6>
+                <p class="text-muted small mb-1">
+                  <i class="bi bi-person me-1"></i><%= booking.user ?
+                  booking.user.username : 'Unknown User' %>
+                </p>
+                <p class="text-muted small mb-1">
+                  <i class="bi bi-calendar3 me-1"></i>
+                  <%= new Date(booking.checkIn).toLocaleDateString('en-IN', {
+                  month: 'short', day: 'numeric', year: 'numeric' }) %> - <%=
+                  new Date(booking.checkOut).toLocaleDateString('en-IN', {
+                  month: 'short', day: 'numeric', year: 'numeric' }) %>
+                </p>
+                <p class="text-muted small mb-2">
+                  <i class="bi bi-people me-1"></i><%= booking.guests %> guests
+                  •
+                  <span class="text-success fw-bold"
+                    >₹<%= booking.totalPrice.toLocaleString("en-IN") %></span
+                  >
+                </p>
+                <% if (booking.expiresAt) { %>
+                <p class="text-muted small mb-0">
+                  <i class="bi bi-clock me-1"></i>
+                  <span id="expires-<%= booking._id %>">
+                    Expires: <%= new
+                    Date(booking.expiresAt).toLocaleString('en-IN', { month:
+                    'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                    }) %>
+                  </span>
+                </p>
+                <% } %>
+              </div>
+              <div class="text-end">
+                <% const now = new Date(); const expiresAt = new
+                Date(booking.expiresAt); const isExpiringSoon = expiresAt - now
+                < 3 * 60 * 60 * 1000; // Less than 3 hours %>
+                <span
+                  class="badge <%= isExpiringSoon ? 'bg-danger' : 'bg-warning' %> text-<%= isExpiringSoon ? 'white' : 'dark' %>"
+                >
+                  <%= isExpiringSoon ? 'Expiring Soon!' : 'Pending' %>
+                </span>
+                <div class="mt-1">
+                  <small class="text-muted"
+                    >ID: #<%= booking._id.toString().slice(-10) %></small
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+        <% } else { %>
+        <div class="text-center py-4">
+          <i class="bi bi-clock display-4 text-muted mb-3"></i>
+          <h6 class="text-muted">No Pending Requests</h6>
+          <p class="text-muted small">
+            New booking requests will appear here for your review.
+          </p>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Handle collapsible properties toggle
+  document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("togglePropertiesBtn");
+    const toggleIcon = document.getElementById("toggleIcon");
+    const collapseElement = document.getElementById("allPropertiesCollapse");
+
+    if (toggleBtn && collapseElement) {
+      collapseElement.addEventListener("show.bs.collapse", function () {
+        toggleIcon.classList.remove("bi-chevron-down");
+        toggleIcon.classList.add("bi-chevron-up");
+      });
+
+      collapseElement.addEventListener("hide.bs.collapse", function () {
+        toggleIcon.classList.remove("bi-chevron-up");
+        toggleIcon.classList.add("bi-chevron-down");
+      });
+    }
+  });
+</script>

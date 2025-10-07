@@ -1,0 +1,118 @@
+<% layout("./layouts/boilerplate")-%>
+
+<!-- Booking Styles -->
+<link rel="stylesheet" href="/css/booking.css" />
+
+<div class="container mt-3">
+  <div class="col-12 col-md-8 offset-md-2">
+    <h3 class="mb-3">Your Booking</h3>
+
+    <!-- Booking Summary Card -->
+    <div class="card booking-card mb-3">
+      <img
+        src="<%= booking.listing.image.url %>"
+        class="card-img-top show-img"
+        alt="<%= booking.listing.title %>"
+        loading="lazy"
+      />
+
+      <div class="card-body">
+        <h4 class="card-title mb-2"><%= booking.listing.title %></h4>
+        <p class="card-text text-muted mb-2">
+          Owned by:
+          <i><%= booking.listing.owner.username %></i>
+        </p>
+
+        <p class="card-text mb-1">
+          <i class="bi bi-calendar-check-fill me-1 text-success"></i>
+          <b>Check-In:</b> <%= booking.checkIn.toDateString() %>
+        </p>
+
+        <p class="card-text mb-1">
+          <i class="bi bi-calendar-x-fill me-1 text-danger"></i>
+          <b>Check-Out:</b> <%= booking.checkOut.toDateString() %>
+        </p>
+
+        <p class="card-text mb-1">
+          <i class="bi bi-people-fill me-1 text-muted"></i>
+          <b>Guests:</b> <%= booking.guests %>
+        </p>
+
+        <hr />
+
+        <div class="d-flex align-items-center justify-content-between">
+          <p class="card-text listing-price mb-0 fw-bold">
+            <i class="bi bi-currency-rupee text-warning"></i>
+            <%= booking.totalPrice.toLocaleString("en-IN") %>
+          </p>
+          <span
+            class="booking-status-badge <%= booking.status === 'confirmed' ? 'bg-success' : booking.status === 'pending' ? 'bg-warning text-dark' : 'bg-danger' %>"
+          >
+            <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1)
+            %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+      <% if (booking.status === "pending") { %>
+      <form
+        action="/listings/<%= booking.listing._id %>/bookings/<%= booking._id %>/confirm?_method=PUT"
+        method="POST"
+        style="display: inline"
+      >
+        <button type="submit" class="btn btn-color">
+          <i class="bi bi-credit-card me-1"></i>Confirm Booking
+        </button>
+      </form>
+      <% } else { %>
+      <div></div>
+      <% } %>
+
+      <form
+        action="/listings/<%= booking.listing._id %>/bookings/<%= booking._id %>/cancel?_method=PUT"
+        method="POST"
+        style="display: inline"
+      >
+        <button
+          type="submit"
+          class="btn btn-dark"
+          onclick="return confirm('Are you sure you want to cancel this booking?')"
+        >
+          <i class="bi bi-x-circle me-1"></i>Cancel Booking
+        </button>
+      </form>
+    </div>
+
+    <!-- Go Back Button -->
+    <div class="text-start mb-4">
+      <a href="/listings/<%= booking.listing._id %>" class="text-muted go-back">
+        <i class="bi bi-arrow-left me-1"></i>Back to Listing
+      </a>
+    </div>
+
+    <!-- Map Section -->
+    <div class="mb-4">
+      <hr />
+      <h3 class="mb-2">
+        <i class="bi bi-geo-alt-fill me-1"></i>Your Destination
+      </h3>
+      <div id="map"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Set up data for existing map.js to use
+  const mapToken = "<%= process.env.MAP_TOKEN %>";
+  const listing = {
+    geometry: {
+      coordinates: <%- JSON.stringify(booking.listing.geometry.coordinates) %>
+    },
+    title: '<%= booking.listing.title %>',
+    location: '<%= booking.listing.location %>'
+  };
+</script>
+<script src="/js/map.js"></script>

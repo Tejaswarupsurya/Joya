@@ -1,18 +1,54 @@
-const mongoose=require("mongoose");
-const passportLocalMongoose= require("passport-local-mongoose");
-const Schema= mongoose.Schema;
+const mongoose = require("mongoose");
+const passportLocalMongoose = require("passport-local-mongoose");
+const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
+const HostSubSchema = new Schema(
+  {
+    isHost: { type: Boolean, default: false },
+    status: {
+      type: String,
+      enum: ["none", "pending", "approved", "rejected"],
+      default: "none",
+    },
+    appliedAt: Date,
+    approvedAt: Date,
+    fullName: String,
+    phone: String,
+    aadhaar: String,
+    avatar: {
+      url: String,
+      filename: String,
+    },
+    isVerified: { type: Boolean, default: false },
   },
-  resetCode: String,
-  resetCodeExpires: Date,
-});
+  { _id: false }
+);
+
+const userSchema = new Schema(
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    role: {
+      type: String,
+      enum: ["user", "host", "admin"],
+      default: "user",
+    },
+    host: { type: HostSubSchema, default: () => ({}) },
+    wishlist: [{ type: Schema.Types.ObjectId, ref: "Listing" }],
+    notifications: [{ type: Schema.Types.ObjectId, ref: "Notification" }],
+    resetCode: String,
+    resetCodeExpires: Date,
+    isEmailVerified: { type: Boolean, default: false },
+    emailVerificationToken: String,
+    emailVerificationExpires: Date,
+  },
+  { timestamps: true }
+);
 
 userSchema.plugin(passportLocalMongoose);
 
-const User= mongoose.model("User", userSchema);
-module.exports= User;
+const User = mongoose.model("User", userSchema);
+module.exports = User;

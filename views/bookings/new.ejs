@@ -1,0 +1,82 @@
+<% layout("./layouts/boilerplate")-%>
+
+<!-- Booking Styles -->
+<link rel="stylesheet" href="/css/booking.css" />
+<!-- Flatpickr styles -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+/>
+
+<div class="container row mt-3">
+  <div class="col-8 offset-2">
+    <h3 class="mb-3">Book Your Stay at <%= listing.title %></h3>
+
+    <div class="card booking-form mb-3">
+      <form
+        action="/listings/<%= listing._id %>/bookings"
+        method="POST"
+        novalidate
+        class="needs-validation"
+      >
+        <!-- Date Range -->
+        <div class="mb-3">
+          <label for="dateRange" class="form-label">Select Dates</label>
+          <input
+            id="dateRange"
+            name="dateRange"
+            class="form-control"
+            type="text"
+            placeholder="Choose Check-In and Check-Out"
+            required
+          />
+          <input type="hidden" name="checkIn" id="checkIn" />
+          <input type="hidden" name="checkOut" id="checkOut" />
+          <div class="form-text">
+            <i class="bi bi-info-circle me-1"></i>
+            Bookings available from tomorrow onwards. Maximum stay: 14 nights.
+            Unavailable dates are shown in red.
+          </div>
+          <div class="invalid-feedback">Please select valid dates.</div>
+        </div>
+
+        <!-- Guests -->
+        <div class="mb-3">
+          <label for="guests" class="form-label">Guests</label>
+          <input
+            type="number"
+            name="guests"
+            id="guests"
+            class="form-control"
+            min="1"
+            max="6"
+            value="1"
+            required
+          />
+          <div class="form-text">Maximum 6 guests allowed</div>
+          <div class="invalid-feedback">
+            Please enter number of guests (1-6).
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <button type="submit" class="btn btn-color">
+            <i class="bi bi-calendar-check me-1"></i>Confirm Booking
+          </button>
+          <a href="/listings/<%= listing._id %>" class="text-muted go-back">
+            <i class="bi bi-caret-left-fill"></i> Go Back
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  // Pass booked dates to JavaScript
+  const bookedRanges = <%- JSON.stringify(bookedDates) %>;
+</script>
+<script src="/js/booking.js"></script>

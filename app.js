@@ -14,7 +14,7 @@ const methodOverride = require("method-override");
 const compression = require("compression");
 const helmet = require("helmet");
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.set("view engine", "ejs");
 app.engine("ejs", ejsMate);
@@ -43,13 +43,25 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const infoRouter = require("./routes/info.js");
+const bookingRouter = require("./routes/booking");
+const hostRouter = require("./routes/host");
+const adminRouter = require("./routes/admin");
+const wishlistRouter = require("./routes/wishlist");
+const searchRouter = require("./routes/search");
+const emailVerificationRouter = require("./routes/email-verification.js");
 
 //mongoAtlas & mongodb Section
 const dbUrl = process.env.ATLASDB_URL;
 const mongoose = require("mongoose");
+
+// Import booking cleanup utility
+const { scheduleCleanup } = require("./utils/bookingCleanup.js");
+
 main()
   .then(() => {
     console.log("Database connected successfully");
+    // Start the booking expiration cleanup scheduler
+    scheduleCleanup();
   })
   .catch((err) => {
     console.log("Database connection failed", err);
@@ -66,9 +78,9 @@ const store = MongoStore.create({
   },
   touchAfter: 24 * 3600,
 });
-store.on("error", ()=>{
-  console.log("ERROR in MONGO SESSION STORE",err);
-})
+store.on("error", () => {
+  console.log("ERROR in MONGO SESSION STORE", err);
+});
 
 const sessionOptions = {
   store,
@@ -108,16 +120,30 @@ app.get("/", (req, res) => {
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
+app.use("/listings/:id/bookings", bookingRouter);
+app.use("/wishlist", wishlistRouter);
 app.use("/info/:page", infoRouter);
+app.use("/", searchRouter);
+app.use("/", adminRouter);
+app.use("/", hostRouter);
 app.use("/", userRouter);
+app.use("/", emailVerificationRouter);
 
 app.all(/.*/, (req, res, next) => {
   next(new ExpressError(404, "Page not found!"));
 });
+
 app.use((err, req, res, next) => {
   let { statusCode = 500, message = "Something went wrong" } = err;
   res.status(statusCode).render("error.ejs", { message });
 });
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+
+// Export app for testing
+module.exports = app;
+
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}

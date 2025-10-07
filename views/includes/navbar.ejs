@@ -1,4 +1,6 @@
-<nav class="navbar navbar-expand-md bg-body-light border-bottom custom-sticky sticky-top">
+<nav
+  class="navbar navbar-expand-md bg-body-light border-bottom custom-sticky sticky-top"
+>
   <div class="container-fluid">
     <a class="navbar-brand mt-0" href="/listings">
       <img
@@ -24,14 +26,16 @@
       <div class="navbar-nav">
         <a class="nav-link underline-slide" href="/listings">Explore</a>
       </div>
-      <% if (!["/login", "/signup", "/listings/new","/forgot","/update-password"].includes(path)) { %>
+      <% if (typeof path !== 'undefined' && !["/login", "/signup",
+      "/listings/new","/forgot","/update-password"].includes(path)) { %>
       <div class="navbar-nav ms-auto">
-        <form class="d-flex" role="search">
+        <form class="d-flex position-relative" role="search">
           <input
             class="form-control me-2 search-input"
             type="search"
             id="search"
-            placeholder="Search destination"
+            placeholder="Search destinations !"
+            autocomplete="off"
           />
           <button class="btn search-btn" type="submit">
             <i class="bi bi-search me-2"></i>
@@ -41,35 +45,114 @@
       </div>
       <% } %>
       <div class="navbar-nav ms-auto">
-        <a class="nav-link underline-slide" href="/listings/new"
-          >Add your Home</a
-        >
-        <% if(!currUser) { %>
+        <% if (!currUser) { %>
+        <!-- Guests -->
         <a class="nav-link signup" href="/signup"><b>Sign Up</b></a>
         <a class="nav-link login" href="/login"><b>Log In</b></a>
-        <% } %> <% if(currUser) { %>
+        <% } else { %>
+        <!-- Host Status Based Navigation -->
+        <% if (currUser.role === 'user') { %>
+        <!-- Regular users - encourage to become host -->
+        <a class="nav-link underline-slide" href="/apply">
+          <i class="bi bi-person me-1"></i>Become a Host?
+        </a>
+        <% } else if (currUser.role === 'host') { %>
+        <!-- Host users - show based on approval status -->
+        <% if (currUser.host.status === 'approved') { %>
+        <a class="nav-link underline-slide" href="/listings/new">
+          Add your Home
+        </a>
+        <% } else if (currUser.host.status === 'pending') { %>
+        <span
+          class="nav-link"
+          style="color: #fbbf24; cursor: default; font-weight: 500"
+        >
+          <i class="bi bi-exclamation-triangle me-1" style="color: #fbbf24"></i
+          >Awaiting Admin Approval
+        </span>
+        <% } else if (currUser.host.status === 'rejected') { %>
+        <a
+          class="nav-link underline-slide"
+          href="/apply"
+          style="color: #f472b6"
+        >
+          <i class="bi bi-x-circle me-1" style="color: #f472b6"></i>Reapply as
+          Host
+        </a>
+        <% } %> <% } %>
+
+        <!-- Dashboard for all roles -->
+        <a
+          class="nav-link underline-slide me-3"
+          href="/dashboard"
+          style="
+            color: #374151;
+            font-weight: 600;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+          "
+        >
+          <i class="bi bi-speedometer2 me-1"></i>Dashboard
+        </a>
+
+        <!-- User avatar dropdown -->
         <div class="d-flex align-items-center gap-2 me-3">
           <div class="dropdown">
             <div
-              class="user-avatar d-flex align-items-center justify-content-center text-white fw-bold"
+              class="user-avatar-wrapper d-flex align-items-center justify-content-center"
               id="userDropdown"
               data-bs-toggle="dropdown"
               aria-expanded="false"
               title="<%= currUser.username %>"
             >
-              <%= currUser.username.charAt(0).toUpperCase() %>
+              <% if (currUser.role === 'admin') { %>
+              <img
+                src="https://res.cloudinary.com/dcvaeebuf/image/upload/v1759743353/host1.jpg"
+                alt="<%= currUser.username %>"
+                class="user-avatar-img"
+              />
+              <% } else if (currUser.role === 'host' && currUser.host &&
+              currUser.host.avatar && currUser.host.avatar.url) { %>
+              <img
+                src="<%= currUser.host.avatar.url %>"
+                alt="<%= currUser.username %>"
+                class="user-avatar-img"
+              />
+              <% } else { %>
+              <div
+                class="user-avatar-initials d-flex align-items-center justify-content-center text-white fw-bold"
+              >
+                <%= currUser.username.charAt(0).toUpperCase() %>
+              </div>
+              <% } %>
             </div>
             <ul
               class="dropdown-menu dropdown-menu-end"
               aria-labelledby="userDropdown"
             >
               <li>
-                <p class="dropdown-item">
+                <% // Determine dashboard URL based on user role let
+                dashboardUrl = '/dashboard'; if (currUser.role === 'admin') {
+                dashboardUrl = '/admin/dashboard'; } else if (currUser.role ===
+                'host') { dashboardUrl = '/hosts/dashboard'; } %>
+                <a class="dropdown-item" href="<%= dashboardUrl %>">
                   <i class="bi bi-person-circle me-2"></i><%= currUser.username
                   %>
-                </p>
+                </a>
               </li>
               <li><hr class="dropdown-divider" /></li>
+
+              <% if (currUser.role === 'user') { %>
+              <!-- Wishlist option only for regular users -->
+              <li>
+                <a class="dropdown-item" href="/dashboard#wishlist">
+                  <i class="bi bi-heart me-2"></i>My Wishlist
+                </a>
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <% } %>
+
               <li>
                 <a class="dropdown-item" href="/update-password">
                   <i class="bi bi-shield-lock me-2"></i>Change Password

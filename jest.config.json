@@ -1,0 +1,13 @@
+{
+  "testEnvironment": "node",
+  "collectCoverage": true,
+  "coverageDirectory": "coverage",
+  "testMatch": [
+    "**/tests/**/*.test.js",
+    "**/__tests__/**/*.js",
+    "**/?(*.)+(spec|test).js"
+  ],
+  "coveragePathIgnorePatterns": ["/node_modules/", "/coverage/", "/public/"],
+  "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+  "verbose": true
+}

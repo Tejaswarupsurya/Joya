@@ -7,6 +7,7 @@ const passport = require("passport");
 //middlewares
 const {
   isLoggedIn,
+  requireRole,
   saveRedirectUrl,
   storeRedirectUrl,
   validateReset,
@@ -41,6 +42,9 @@ router
     userController.login
   );
 
+//Dashboard - Smart routing based on user role
+router.get("/dashboard", isLoggedIn, wrapAsync(userController.renderDashboard));
+
 //changepassword
 router
   .route("/update-password")
@@ -55,6 +59,12 @@ router
 
 //get-code
 router.post("/get-code", wrapAsync(userController.getCode));
+
+//change email
+router
+  .route("/change-email")
+  .get(isLoggedIn, userController.renderChangeEmailForm)
+  .post(isLoggedIn, wrapAsync(userController.changeEmail));
 
 //logout
 router.get("/logout", userController.logout);

@@ -1,0 +1,453 @@
+/* Dashboard Styles - Clean & Professional */
+.dashboard-header {
+  background: linear-gradient(
+    135deg,
+    #fc385c 0%,
+    #ff4d6d 35%,
+    #ff8c42 70%,
+    #ffb347 100%
+  );
+  border-radius: 12px;
+  color: white;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(252, 56, 92, 0.25);
+}
+
+.dashboard-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.stats-container {
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.stat-icon.active {
+  background: #fc385c;
+  color: white;
+}
+
+.stat-icon.completed {
+  background: #22c55e;
+  color: white;
+}
+
+.stat-icon.pending {
+  background: #f97316;
+  color: white;
+}
+
+.stat-icon.cancelled {
+  background: #ef4444;
+  color: white;
+}
+
+.stat-icon.wishlist {
+  background: #ec4899;
+  color: white;
+}
+
+/* Horizontal Scrollable Wishlist */
+.wishlist-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.wishlist-scroll {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.wishlist-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.wishlist-card {
+  flex: 0 0 280px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.wishlist-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.wishlist-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+.wishlist-remove-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+}
+
+.wishlist-remove-btn:hover {
+  transform: scale(1.1);
+}
+
+.wishlist-card-body {
+  padding: 1rem;
+}
+
+.wishlist-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0;
+  color: #1f2937;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.wishlist-location {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wishlist-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.wishlist-price strong {
+  color: #fc385c;
+  font-size: 0.9rem;
+}
+
+.wishlist-price small {
+  color: #9ca3af;
+  font-size: 0.7rem;
+}
+
+/* Dashboard Section Colors */
+.section-icon-active {
+  color: #fc385c;
+}
+
+.section-icon-pending {
+  color: #f97316;
+}
+
+.section-icon-completed {
+  color: #22c55e;
+}
+
+.section-icon-cancelled {
+  color: #ef4444;
+}
+
+/* Booking Card States */
+.booking-card-completed {
+  filter: brightness(0.95);
+}
+
+.booking-card-completed img {
+  filter: sepia(10%);
+}
+
+.booking-status-completed {
+  background: #22c55e;
+  color: white;
+}
+
+.booking-card-cancelled {
+  opacity: 0.7;
+}
+
+.booking-card-cancelled img {
+  filter: grayscale(50%);
+}
+
+/* Pending Booking Button */
+.btn-pending-action {
+  background: #f97316;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.stat-number {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0.25rem 0;
+}
+
+.stat-number.active {
+  color: #fc385c;
+}
+.stat-number.completed {
+  color: #22c55e;
+}
+.stat-number.pending {
+  color: #f97316;
+}
+.stat-number.cancelled {
+  color: #ef4444;
+}
+
+.stat-label {
+  color: #6b7280;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.section-title {
+  color: #1f2937;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.booking-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+  transition: all 0.3s ease;
+  margin-bottom: 1.5rem;
+}
+
+.booking-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.booking-card img {
+  height: 200px;
+  object-fit: cover;
+}
+
+.booking-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-confirmed {
+  background: #22c55e;
+  color: white;
+}
+
+.status-pending {
+  background: #f97316;
+  color: white;
+}
+
+.status-expiring {
+  background: #dc2626;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+.status-expired {
+  background: #6b7280;
+  color: white;
+}
+
+.status-cancelled {
+  background: #ef4444;
+  color: white;
+}
+
+.booking-details {
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.booking-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000;
+}
+
+.btn-primary-modern {
+  background: #fc385c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary-modern:hover {
+  background: #e1325a;
+  transform: translateY(-1px);
+  color: white;
+}
+
+.btn-outline-modern {
+  border: 2px solid #e5e7eb;
+  color: #6b7280;
+  background: transparent;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-modern:hover {
+  border-color: #fc385c;
+  color: #fc385c;
+  background: rgba(252, 56, 92, 0.05);
+}
+
+.find-stays-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.find-stays-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: white;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: #9ca3af;
+}
+
+.empty-state i {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+  color: #d1d5db;
+}
+
+.alert-modern {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 1rem 1.5rem;
+    text-align: center;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-number {
+    font-size: 1.75rem;
+  }
+
+  .booking-card img {
+    height: 180px;
+  }
+}
+
+/* Pulse animation for expiring bookings */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Countdown timer styles */
+.countdown-timer {
+  font-family: "Courier New", monospace;
+  font-weight: bold;
+}
+
+.alert-info {
+  background-color: rgba(13, 202, 240, 0.1);
+  border: 1px solid rgba(13, 202, 240, 0.25);
+  border-radius: 8px;
+}

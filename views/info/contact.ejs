@@ -1,0 +1,456 @@
+<% layout("layouts/boilerplate") %>
+
+<div class="container my-5">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold" style="color: #fc5c79">Contact Us</h1>
+        <p class="lead text-muted">
+          We're here to help! Get in touch with our team
+        </p>
+      </div>
+
+      <!-- Account Recovery Alert -->
+      <div class="alert alert-warning mb-4">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h5 class="alert-heading">🆘 Can't Access Your Account?</h5>
+            <p class="mb-0">
+              If you entered the wrong email during signup or can't access your
+              email, we can help you recover your account.
+            </p>
+          </div>
+          <div class="col-md-4 text-end">
+            <a href="#account-recovery" class="btn btn-warning">
+              Request Account Recovery
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Methods -->
+      <div class="row g-4 mb-5">
+        <div class="col-md-4">
+          <div class="card h-100 text-center border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div
+                class="bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                style="width: 80px; height: 80px"
+              >
+                <i class="bi bi-telephone text-primary fs-2"></i>
+              </div>
+              <h5>Call Us</h5>
+              <p class="text-muted">Speak directly with our support team</p>
+              <a href="tel:+911234567890" class="btn btn-primary"
+                >+91 1234 567 890</a
+              >
+              <small class="d-block text-muted mt-2"
+                >24/7 Support Available</small
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 text-center border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div
+                class="bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                style="width: 80px; height: 80px"
+              >
+                <i class="bi bi-envelope text-success fs-2"></i>
+              </div>
+              <h5>Email Support</h5>
+              <p class="text-muted">Send us a detailed message</p>
+              <a href="mailto:support@joya.com" class="btn btn-success"
+                >support@joya.com</a
+              >
+              <small class="d-block text-muted mt-2"
+                >Response within 2-4 hours</small
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card h-100 text-center border-0 shadow-sm">
+            <div class="card-body p-4">
+              <div
+                class="bg-info bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                style="width: 80px; height: 80px"
+              >
+                <i class="bi bi-chat-dots text-info fs-2"></i>
+              </div>
+              <h5>Live Chat</h5>
+              <p class="text-muted">Get instant help online</p>
+              <button class="btn btn-info" onclick="openChat()">
+                Start Chat
+              </button>
+              <small class="d-block text-muted mt-2"
+                >Available 6 AM - 12 AM IST</small
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="card shadow-sm mb-5">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-envelope me-2"></i>Send us a Message
+          </h5>
+        </div>
+        <div class="card-body p-4">
+          <form>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="firstName" class="form-label">First Name *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="firstName"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label for="lastName" class="form-label">Last Name *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="lastName"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label">Email Address *</label>
+                <input type="email" class="form-control" id="email" required />
+              </div>
+              <div class="col-md-6">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" />
+              </div>
+              <div class="col-12">
+                <label for="subject" class="form-label">Subject *</label>
+                <select class="form-control" id="subject" required>
+                  <option value="">Select a topic</option>
+                  <option value="booking">Booking Support</option>
+                  <option value="hosting">Host Support</option>
+                  <option value="payment">Payment Issues</option>
+                  <option value="technical">Technical Issues</option>
+                  <option value="feedback">Feedback & Suggestions</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label for="message" class="form-label">Message *</label>
+                <textarea
+                  class="form-control"
+                  id="message"
+                  rows="5"
+                  placeholder="Please describe your inquiry in detail..."
+                  required
+                ></textarea>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="privacy"
+                    required
+                  />
+                  <label class="form-check-label" for="privacy">
+                    I agree to the
+                    <a href="/info/privacy">Privacy Policy</a> and
+                    <a href="/info/terms">Terms of Service</a>
+                  </label>
+                </div>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-lg">
+                  <i class="bi bi-send me-2"></i>Send Message
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Office Locations -->
+      <div class="row g-4 mb-5">
+        <div class="col-12">
+          <h3 class="text-center text-primary mb-4">Our Offices</h3>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="text-primary">
+                <i class="bi bi-building me-2"></i>Tirupati Headquarters
+              </h5>
+              <address class="mb-3">
+                Joya Hospitality Private Limited<br />
+                Survey No. 315, Sapthagiri Heights, Ring Road<br />
+                Tirupati Urban, Andhra Pradesh 517501<br />
+                India
+              </address>
+              <p class="mb-2">
+                <strong>Hours:</strong> Monday - Friday, 9 AM - 6 PM IST
+              </p>
+              <p class="mb-0"><strong>Phone:</strong> +91 22 1234 5678</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="text-primary">
+                <i class="bi bi-building me-2"></i>Secondary Office
+              </h5>
+              <address class="mb-3">
+                Joya Tech Center<br />
+                Floor 3, Tirumala Towers, Gandhi Road<br />
+                Tirupati Urban, Andhra Pradesh 517501<br />
+                India
+              </address>
+              <p class="mb-2">
+                <strong>Hours:</strong> Monday - Friday, 9 AM - 6 PM IST
+              </p>
+              <p class="mb-0"><strong>Phone:</strong> +91 80 9876 5432</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Department Contacts -->
+      <div class="card">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">Department-specific Contacts</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h6 class="text-primary">Guest Support</h6>
+              <p class="mb-1"><strong>Email:</strong> support@joya.com</p>
+              <p class="mb-3"><strong>Phone:</strong> +91 1234 567 890</p>
+
+              <h6 class="text-primary">Host Support</h6>
+              <p class="mb-1"><strong>Email:</strong> hosts@joya.com</p>
+              <p class="mb-3"><strong>Phone:</strong> +91 1234 567 891</p>
+
+              <h6 class="text-primary">Business Partnerships</h6>
+              <p class="mb-1"><strong>Email:</strong> partnerships@joya.com</p>
+              <p class="mb-3"><strong>Phone:</strong> +91 1234 567 892</p>
+            </div>
+            <div class="col-md-6">
+              <h6 class="text-primary">Media & Press</h6>
+              <p class="mb-1"><strong>Email:</strong> press@joya.com</p>
+              <p class="mb-3"><strong>Phone:</strong> +91 1234 567 893</p>
+
+              <h6 class="text-primary">Legal & Compliance</h6>
+              <p class="mb-1"><strong>Email:</strong> legal@joya.com</p>
+              <p class="mb-3"><strong>Phone:</strong> +91 1234 567 894</p>
+
+              <h6 class="text-primary">Careers</h6>
+              <p class="mb-1"><strong>Email:</strong> careers@joya.com</p>
+              <p class="mb-3">
+                <strong>Link:</strong> <a href="/info/careers">View Openings</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Media -->
+      <div class="text-center mt-5">
+        <h5 class="text-primary mb-3">Follow Us</h5>
+        <div class="d-flex justify-content-center gap-3">
+          <a
+            href="#"
+            class="btn btn-outline-primary rounded-circle"
+            style="width: 50px; height: 50px"
+          >
+            <i class="bi bi-facebook"></i>
+          </a>
+          <a
+            href="#"
+            class="btn btn-outline-info rounded-circle"
+            style="width: 50px; height: 50px"
+          >
+            <i class="bi bi-twitter"></i>
+          </a>
+          <a
+            href="#"
+            class="btn btn-outline-danger rounded-circle"
+            style="width: 50px; height: 50px"
+          >
+            <i class="bi bi-instagram"></i>
+          </a>
+          <a
+            href="#"
+            class="btn btn-outline-primary rounded-circle"
+            style="width: 50px; height: 50px"
+          >
+            <i class="bi bi-linkedin"></i>
+          </a>
+          <a
+            href="#"
+            class="btn btn-outline-success rounded-circle"
+            style="width: 50px; height: 50px"
+          >
+            <i class="bi bi-whatsapp"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account Recovery Section -->
+  <div class="row mt-5" id="account-recovery">
+    <div class="col-lg-8 mx-auto">
+      <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+          <h4 class="mb-0">🆘 Account Recovery Request</h4>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-info">
+            <strong>📧 Wrong Email During Signup?</strong>
+            <p class="mb-0">
+              If you entered the wrong email during signup or can't access your
+              email account, fill out this form and our support team will help
+              you recover your account.
+            </p>
+          </div>
+
+          <form action="/contact-support" method="POST">
+            <!-- Username -->
+            <div class="mb-3">
+              <label for="username" class="form-label">Your Username *</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username"
+                required
+                placeholder="Enter your Joya username"
+              />
+            </div>
+
+            <!-- Wrong Email -->
+            <div class="mb-3">
+              <label for="wrongEmail" class="form-label"
+                >Email Used During Signup (Wrong Email)</label
+              >
+              <input
+                type="email"
+                class="form-control"
+                id="wrongEmail"
+                name="wrongEmail"
+                placeholder="The incorrect email you registered with"
+              />
+            </div>
+
+            <!-- Correct Email -->
+            <div class="mb-3">
+              <label for="correctEmail" class="form-label"
+                >Your Correct Email Address *</label
+              >
+              <input
+                type="email"
+                class="form-control"
+                id="correctEmail"
+                name="correctEmail"
+                required
+                placeholder="Your actual email address you can access"
+              />
+            </div>
+
+            <!-- Additional Details -->
+            <div class="mb-3">
+              <label for="details" class="form-label"
+                >Additional Information</label
+              >
+              <textarea
+                class="form-control"
+                id="details"
+                name="details"
+                rows="3"
+                placeholder="Provide any details that can help verify your identity (signup date, last booking, etc.)"
+              ></textarea>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+              <label for="phone" class="form-label"
+                >Phone Number (Optional)</label
+              >
+              <input
+                type="tel"
+                class="form-control"
+                id="phone"
+                name="phone"
+                placeholder="For urgent support (optional)"
+              />
+            </div>
+
+            <button type="submit" class="btn btn-warning w-100">
+              🆘 Request Account Recovery
+            </button>
+          </form>
+
+          <div class="row mt-4">
+            <div class="col-md-6">
+              <h6>🔒 Recovery Process:</h6>
+              <ul class="small text-muted">
+                <li>Identity verification</li>
+                <li>Email address update</li>
+                <li>New verification email sent</li>
+                <li>Full account access restored</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h6>⏱️ Response Time:</h6>
+              <p class="small text-muted">
+                Our support team typically responds within 24-48 hours. For
+                urgent issues, please call: +91 1234 567 890
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openChat() {
+    alert(
+      "Live chat feature coming soon! Please call or email us for immediate assistance."
+    );
+  }
+
+  // Account recovery form validation
+  document
+    .querySelector("#account-recovery form")
+    .addEventListener("submit", function (e) {
+      const username = document.getElementById("username").value;
+      const correctEmail = document.getElementById("correctEmail").value;
+
+      if (!username || !correctEmail) {
+        e.preventDefault();
+        alert("Please fill in your username and correct email address");
+        return;
+      }
+
+      if (!correctEmail.includes("@")) {
+        e.preventDefault();
+        alert("Please enter a valid email address");
+        return;
+      }
+
+      alert(
+        "Account recovery request submitted! We will contact you within 24-48 hours."
+      );
+    });
+</script>
+
+<script src="/js/search.js"></script>

@@ -50,17 +50,34 @@
       </div>
       <% } %>
     </div>
-    <% } %>
-  </div>
-
-  <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
-    <div class="btns mt-3 mb-0 d-flex flex-column flex-md-row justify-content-center gap-4">
-      <a href="/listings/<%= listing._id %>/edit" class="btn btn-color" style="width: 100px;">Edit</a>
+    <% } %> <% if (!currUser) { %>
+    <a
+      href="/signup"
+      class="btn btn-color btn-sm rounded-pill book-this-stay px-3 py-2 mt-3"
+      >Book This Stay</a
+    >
+    <% } else if (currUser.role === "user" || currUser.role === "admin") { %>
+    <a
+      href="/listings/<%= listing._id %>/bookings/new"
+      class="btn btn-color btn-sm rounded-pill book-this-stay px-3 py-2 mt-3"
+      >Book This Stay</a
+    >
+    <% } %> <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
+    <div
+      class="btns mt-3 mb-0 d-flex flex-column flex-md-row justify-content-end gap-3"
+    >
+      <a
+        href="/listings/<%= listing._id %>/edit"
+        class="btn btn-color"
+        style="width: 100px"
+        >Edit</a
+      >
       <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
-        <button class="btn btn-dark">Delete</button>
+        <button class="btn btn-dark" style="width: 100px">Delete</button>
       </form>
     </div>
-  <% } %>
+    <% } %>
+  </div>
 
   <div class="col-8 offset-2">
     <% if(currUser) { %>
@@ -135,8 +152,7 @@
       </div>
       <button class="btn btn-color">Submit</button>
     </form>
-    <% } %> 
-    <% if (listing.reviews.length > 0) { %>
+    <% } %> <% if (listing.reviews.length > 0) { %>
     <hr />
     <div class="review-summary row mb-3">
       <h4>Review Summary</h4>
@@ -164,15 +180,19 @@
           class="starability-result mx-auto mb-1"
           data-rating="<%= Math.round(avgRating) %>"
         ></p>
-        <small class="text-primary"><%= listing.reviews.length %> reviews</small>
+        <small class="text-primary"
+          ><%= listing.reviews.length %> reviews</small
+        >
       </div>
     </div>
-    <% } %> 
-    <% if (listing.reviews.length > 0) { %>
+    <% } %> <% if (listing.reviews.length > 0) { %>
     <div class="row">
       <h4 class="mb-3">All Reviews</h4>
       <% for(review of listing.reviews){ %>
-      <div class="card col-12 col-md-5 mb-3 ms-md-3"  style="border-radius: 20px;">
+      <div
+        class="card col-12 col-md-5 mb-3 ms-md-3"
+        style="border-radius: 20px"
+      >
         <div class="card-body">
           <div
             class="d-flex align-items-center mt-2 gap-1 justify-content-between"
@@ -215,8 +235,10 @@
   </div>
 
   <div class="col-12 col-md-8 offset-md-2 mb-0">
-    <hr>
-    <h3 class="mb-2"><i class="bi bi-globe-americas me-1"></i>Where you'll be</h3>
+    <hr />
+    <h3 class="mb-2">
+      <i class="bi bi-globe-americas me-1"></i>Where you'll be
+    </h3>
     <div id="map"></div>
   </div>
 </div>

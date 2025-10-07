@@ -1,0 +1,85 @@
+<% layout("./layouts/boilerplate")-%>
+<div class="container row mt-3">
+  <div class="col-6 offset-3">
+    <h3>Change Email Address</h3>
+    <form
+      method="POST"
+      action="/change-email"
+      novalidate
+      class="needs-validation"
+    >
+      <!-- Current Email Display -->
+      <div class="mb-3">
+        <label class="form-label">Current Email</label>
+        <div class="form-control bg-light text-muted"><%= user.email %></div>
+      </div>
+
+      <!-- New Email -->
+      <div class="mb-3">
+        <label for="newEmail" class="form-label">New Email Address</label>
+        <input
+          name="newEmail"
+          class="form-control"
+          id="newEmail"
+          type="email"
+          required
+          placeholder="Enter your new email address"
+        />
+        <div class="invalid-feedback">Enter a valid email address</div>
+        <div class="form-text">
+          Make sure you have access to this email address
+        </div>
+      </div>
+
+      <!-- Password Confirmation -->
+      <div class="mb-3 position-relative">
+        <label for="password" class="form-label">Confirm Password</label>
+        <input
+          name="password"
+          class="form-control"
+          id="password"
+          type="password"
+          required
+          placeholder="Enter your current password"
+        />
+        <i class="bi bi-eye-slash eye-toggle position-absolute end-0 me-3"></i>
+        <div class="invalid-feedback">Password is required</div>
+        <div class="form-text">
+          Enter your current password to confirm this change
+        </div>
+      </div>
+
+      <!-- Warning Notice -->
+      <div class="alert alert-warning small">
+        <strong>⚠️ Important:</strong> Your new email will need to be verified.
+        Make sure you have access to the new email address.
+      </div>
+
+      <div
+        class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2"
+      >
+        <button class="btn btn-color" type="submit">Change Email</button>
+        <a href="/dashboard" class="text-muted go-back">
+          <i class="bi bi-caret-left-fill"></i>Back to Dashboard
+        </a>
+      </div>
+
+      <!-- Help Links -->
+      <div class="text-center mt-3">
+        <small class="text-muted">
+          Need help?
+          <a href="/contact#account-recovery" class="text-primary"
+            >Contact Support</a
+          >
+        </small>
+      </div>
+
+      <br /><br />
+    </form>
+  </div>
+</div>
+
+<script type="module">
+  import { setupEyeToggle } from "/js/passwordUtils.js";
+  setupEyeToggle();
+</script>

@@ -1,0 +1,472 @@
+/* 
+ * Joya Info Pages Consolidated CSS
+ * Color Scheme: #fc5c79 (primary), #fce4e9 (light), #fff5f7 (lightest)
+ * Author: Joya Development Team
+ * Created: October 2025
+ */
+
+/* ==========================================================================
+   COMMON INFO PAGE STYLES
+   ========================================================================== */
+
+/* Section Headers */
+.section-header {
+  color: #fc5c79;
+  border-bottom: 2px solid #fce4e9;
+  padding-bottom: 10px;
+}
+
+/* Cards */
+.card {
+  border: none;
+  box-shadow: 0 4px 15px rgba(252, 92, 121, 0.1);
+  border-radius: 15px;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(252, 92, 121, 0.2);
+}
+
+/* Hero Sections */
+.hero-section {
+  background: linear-gradient(135deg, #fce4e9 0%, #fff5f7 100%);
+  border-radius: 20px;
+  padding: 3rem;
+}
+
+.hero-banner {
+  background: linear-gradient(135deg, #fce4e9 0%, #fff5f7 100%);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+}
+
+/* Buttons */
+.btn-outline-primary {
+  border-color: #fc5c79;
+  color: #fc5c79;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background-color: #fc5c79;
+  border-color: #fc5c79;
+  transform: translateY(-2px);
+}
+
+/* Badges */
+.badge {
+  background: linear-gradient(135deg, #fc5c79 0%, #ff7a93 100%);
+  border: none;
+}
+
+/* CTA Sections */
+.cta-section {
+  background: linear-gradient(135deg, #fc5c79 0%, #ff7a93 100%);
+  border-radius: 20px;
+}
+
+/* ==========================================================================
+   FAQ PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.nav-pills .nav-link {
+  color: #fc5c79;
+  border: 2px solid #fce4e9;
+  margin: 0 5px;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.nav-pills .nav-link:hover {
+  background-color: #fce4e9;
+  border-color: #fc5c79;
+}
+
+.nav-pills .nav-link.active {
+  background-color: #fc5c79 !important;
+  border-color: #fc5c79 !important;
+  color: white !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #fce4e9;
+  color: #fc5c79;
+  border-color: #fc5c79;
+}
+
+.accordion-button:focus {
+  box-shadow: 0 0 0 0.25rem rgba(252, 92, 121, 0.25);
+  border-color: #fc5c79;
+}
+
+.accordion-button::after {
+  filter: hue-rotate(320deg);
+}
+
+/* ==========================================================================
+   CAREERS PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.job-card {
+  border: none;
+  box-shadow: 0 4px 15px rgba(252, 92, 121, 0.1);
+  border-radius: 15px;
+  border-left: 4px solid #fce4e9;
+  transition: all 0.3s ease;
+}
+
+.job-card:hover {
+  border-left-color: #fc5c79;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(252, 92, 121, 0.2);
+}
+
+.culture-card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.culture-card:hover {
+  transform: scale(1.02);
+}
+
+.benefits-card {
+  border: none;
+  border-left: 4px solid #fc5c79;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.benefits-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(252, 92, 121, 0.15);
+}
+
+/* ==========================================================================
+   COMPANY INFO PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.stat-card {
+  border: none;
+  box-shadow: 0 4px 15px rgba(252, 92, 121, 0.1);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(252, 92, 121, 0.2);
+}
+
+.stat-number {
+  color: #fc5c79;
+  font-weight: bold;
+}
+
+.team-card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.team-card:hover {
+  transform: scale(1.02);
+}
+
+.timeline-item {
+  border-left: 4px solid #fce4e9;
+  transition: all 0.3s ease;
+}
+
+.timeline-item:hover {
+  border-left-color: #fc5c79;
+  background-color: rgba(252, 92, 121, 0.05);
+  border-radius: 8px;
+}
+
+/* ==========================================================================
+   CONTACT PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.contact-card {
+  border: none;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #fce4e9 0%, #fff5f7 100%);
+}
+
+.contact-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(252, 92, 121, 0.15);
+}
+
+.contact-icon {
+  color: #fc5c79;
+  background: rgba(252, 92, 121, 0.1);
+  padding: 15px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   SITEMAP PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.sitemap-section {
+  background: linear-gradient(135deg, #fce4e9 0%, #fff5f7 100%);
+  border-radius: 15px;
+  border-left: 4px solid #fc5c79;
+  transition: all 0.3s ease;
+}
+
+.sitemap-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(252, 92, 121, 0.15);
+}
+
+.section-title {
+  color: #fc5c79;
+  border-bottom: 2px solid #fce4e9;
+  padding-bottom: 8px;
+}
+
+.sitemap-link {
+  color: #333;
+  text-decoration: none;
+  padding: 8px 0;
+  border-bottom: 1px solid #fce4e9;
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.sitemap-link:hover {
+  color: #fc5c79;
+  padding-left: 15px;
+  background-color: rgba(252, 92, 121, 0.05);
+  border-radius: 8px;
+}
+
+.quick-nav {
+  background: linear-gradient(135deg, #fc5c79 0%, #ff7a93 100%);
+  border-radius: 20px;
+}
+
+.btn-light {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  color: #fc5c79;
+  font-weight: 600;
+  border-radius: 25px;
+}
+
+/* ==========================================================================
+   TERMS & PRIVACY PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.list-group-item {
+  border-left: 4px solid #fce4e9;
+  transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+  border-left-color: #fc5c79;
+  background-color: #fce4e9;
+}
+
+.legal-section {
+  border-left: 4px solid #fce4e9;
+  padding-left: 20px;
+  margin-bottom: 30px;
+}
+
+.legal-section:hover {
+  border-left-color: #fc5c79;
+}
+
+/* ==========================================================================
+   HELP CENTER PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.help-card {
+  border: none;
+  box-shadow: 0 4px 15px rgba(252, 92, 121, 0.1);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #fce4e9 0%, #fff5f7 100%);
+}
+
+.help-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(252, 92, 121, 0.2);
+}
+
+.category-icon {
+  transition: all 0.3s ease;
+}
+
+.help-card:hover .category-icon {
+  transform: scale(1.1);
+}
+
+.support-section {
+  background: linear-gradient(135deg, #fce4e9 0%, #fff5f7 100%);
+  border-radius: 15px;
+  border: 2px solid #fc5c79;
+}
+
+/* ==========================================================================
+   HOST GUIDE PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.guide-step {
+  border: none;
+  border-left: 4px solid #fce4e9;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, #fce4e9 0%, #fff5f7 100%);
+}
+
+.guide-step:hover {
+  border-left-color: #fc5c79;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(252, 92, 121, 0.15);
+}
+
+.step-number {
+  background: linear-gradient(135deg, #fc5c79 0%, #ff7a93 100%);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.tip-card {
+  background: linear-gradient(135deg, #fff5f7 0%, #fce4e9 100%);
+  border: 2px solid #fc5c79;
+  border-radius: 15px;
+}
+
+/* ==========================================================================
+   SAFETY PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.safety-feature {
+  border: none;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #fce4e9 0%, #fff5f7 100%);
+  transition: all 0.3s ease;
+}
+
+.safety-feature:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(252, 92, 121, 0.15);
+}
+
+.safety-icon {
+  color: #fc5c79;
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+}
+
+/* ==========================================================================
+   ACCESSIBILITY PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.accessibility-card {
+  border: none;
+  border-left: 4px solid #fce4e9;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.accessibility-card:hover {
+  border-left-color: #fc5c79;
+  background-color: rgba(252, 92, 121, 0.05);
+  transform: translateY(-2px);
+}
+
+.feature-icon {
+  color: #fc5c79;
+  background: rgba(252, 92, 121, 0.1);
+  padding: 12px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
+/* ==========================================================================
+   COMMUNITY PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.community-card {
+  border: none;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #fce4e9 0%, #fff5f7 100%);
+  transition: all 0.3s ease;
+}
+
+.community-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(252, 92, 121, 0.15);
+}
+
+.community-icon {
+  color: #fc5c79;
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.event-card {
+  border-left: 4px solid #fc5c79;
+  background: rgba(252, 92, 121, 0.05);
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.event-card:hover {
+  background: rgba(252, 92, 121, 0.1);
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .hero-section,
+  .hero-banner {
+    padding: 2rem 1rem;
+  }
+
+  .card {
+    margin-bottom: 1rem;
+  }
+
+  .step-number {
+    width: 35px;
+    height: 35px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section,
+  .hero-banner {
+    padding: 1.5rem 1rem;
+  }
+
+  .community-icon,
+  .safety-icon {
+    font-size: 2rem;
+  }
+}

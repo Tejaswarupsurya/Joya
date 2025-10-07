@@ -30,9 +30,16 @@ export function setupOtpHandler({
 
       const data = await res.json();
       if (data.success) {
-        alert(
-          `Your reset code is: ${data.code}(valid for only 10 minutes)`
-        );
+        // Check if we're in development mode and code is provided
+        if (data.code) {
+          alert(
+            `Development Mode - Your reset code is: ${data.code} (valid for 10 minutes)\n\nIn production, this would be sent to your email.`
+          );
+        } else {
+          alert(
+            `OTP sent successfully to your email address!\n\nPlease check your inbox and enter the 6-digit code below.\n\nCode expires in 10 minutes.`
+          );
+        }
         setupCooldown(buttonId, timerTextId, 60);
       } else {
         alert(data.error || "Something went wrong.");

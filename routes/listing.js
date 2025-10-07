@@ -5,6 +5,7 @@ const router = express.Router();
 const {
   isLoggedIn,
   isOwner,
+  isHost,
   validateListing,
   fileFilter,
   checkRequiredFile,
@@ -33,6 +34,7 @@ router
   .get(wrapAsync(listingController.index))
   .post(
     isLoggedIn,
+    isHost,
     upload.single("listing[image]"),
     checkRequiredFile,
     validateListing,
@@ -40,25 +42,32 @@ router
   );
 
 //New route
-router.get("/new", isLoggedIn, listingController.renderNewForm);
+router.get("/new", isLoggedIn, isHost, listingController.renderNewForm);
 
 router
   .route("/:id")
   .get(wrapAsync(listingController.showListings))
   .put(
     isLoggedIn,
+    isHost,
     isOwner,
     upload.single("listing[image]"),
     checkOptionalFile,
     validateListing,
     wrapAsync(listingController.updateListing)
   )
-  .delete(isLoggedIn, isOwner, wrapAsync(listingController.destroyListing));
+  .delete(
+    isLoggedIn,
+    isHost,
+    isOwner,
+    wrapAsync(listingController.destroyListing)
+  );
 
 //Edit route
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isHost,
   isOwner,
   wrapAsync(listingController.renderEditForm)
 );

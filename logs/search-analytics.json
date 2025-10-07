@@ -1,0 +1,24 @@
+{
+  "totalSearches": 1,
+  "popularQueries": {
+    "nonexistentpropertysearch123": 1
+  },
+  "noResultsQueries": [
+    {
+      "query": "nonexistentpropertysearch123",
+      "timestamp": "2025-10-07T10:01:06.391Z",
+      "category": null,
+      "location": null
+    }
+  ],
+  "avgResultsPerSearch": 0,
+  "searchTrends": {
+    "2025-10-07": {
+      "count": 1,
+      "avgResults": 0,
+      "queries": [
+        "nonexistentpropertysearch123"
+      ]
+    }
+  }
+}

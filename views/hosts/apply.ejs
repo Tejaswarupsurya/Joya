@@ -1,0 +1,283 @@
+<% layout("./layouts/boilerplate")-%>
+<link rel="stylesheet" href="/css/host-apply.css" />
+
+<div class="container row mt-3">
+  <div class="col-10 offset-1 col-lg-8 offset-lg-2">
+    <h3 class="mb-4">
+      <i class="bi bi-person-badge me-2 text-primary"></i>Apply to Become a Host
+    </h3>
+
+    <form
+      method="POST"
+      action="/apply"
+      novalidate
+      class="needs-validation"
+      enctype="multipart/form-data"
+    >
+      <!-- Photo Upload Section -->
+      <div class="form-container">
+        <h5 class="section-title">
+          <i class="bi bi-camera me-2"></i>Profile Photo
+        </h5>
+
+        <div class="photo-upload-frame" id="photoUpload">
+          <input
+            type="file"
+            name="avatar"
+            id="avatarInput"
+            accept="image/*"
+            style="display: none"
+            required
+          />
+
+          <div class="upload-content" id="uploadContent">
+            <div class="upload-icon">
+              <i class="bi bi-cloud-upload"></i>
+            </div>
+            <div class="upload-text">Upload Your Photo</div>
+            <div class="upload-subtext">
+              Click here or drag and drop your image
+            </div>
+            <div class="file-size-limit">
+              <i class="bi bi-info-circle me-1"></i>
+              Max file size: 5MB | Formats: JPG, PNG, JPEG
+            </div>
+          </div>
+
+          <div class="preview-container" id="previewContainer">
+            <img id="previewImage" class="preview-image" alt="Preview" />
+            <button type="button" class="remove-image" id="removeImage">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </div>
+        <div class="invalid-feedback">Please upload your profile photo.</div>
+      </div>
+
+      <!-- Personal Information Section -->
+      <div class="form-container">
+        <h5 class="section-title">
+          <i class="bi bi-person me-2"></i>Personal Information
+        </h5>
+
+        <div class="mb-3">
+          <label for="fullName" class="form-label"
+            >Full Name <span class="text-danger">*</span></label
+          >
+          <input
+            name="fullName"
+            id="fullName"
+            class="form-control"
+            placeholder="Enter your full name"
+            type="text"
+            required
+            minlength="2"
+            maxlength="50"
+          />
+          <div class="valid-feedback">Looks good!</div>
+          <div class="invalid-feedback">
+            Please provide a valid full name (2-50 characters).
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="mb-3 col-md-6">
+            <label for="phone" class="form-label"
+              >Phone Number <span class="text-danger">*</span></label
+            >
+            <input
+              name="phone"
+              id="phone"
+              class="form-control"
+              placeholder="Enter 10-digit phone number"
+              type="tel"
+              required
+              pattern="[0-9]{10}"
+              maxlength="10"
+            />
+            <div class="valid-feedback">Valid phone number!</div>
+            <div class="invalid-feedback">
+              Please provide a valid 10-digit phone number.
+            </div>
+          </div>
+
+          <div class="mb-3 col-md-6">
+            <label for="aadhaar" class="form-label"
+              >Aadhaar Number <span class="text-danger">*</span></label
+            >
+            <input
+              name="aadhaar"
+              id="aadhaar"
+              class="form-control"
+              placeholder="Enter 12-digit Aadhaar number"
+              type="text"
+              required
+              pattern="[0-9]{12}"
+              maxlength="12"
+            />
+            <div class="valid-feedback">Valid Aadhaar number!</div>
+            <div class="invalid-feedback">
+              Please provide a valid 12-digit Aadhaar number.
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-info">
+          <i class="bi bi-shield-check me-2"></i>
+          <strong>Privacy Note:</strong> Your personal information is securely
+          stored and used only for verification purposes.
+        </div>
+      </div>
+
+      <!-- Terms and Submit Section -->
+      <div class="form-container">
+        <div class="form-check mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="termsCheck"
+            required
+          />
+          <label class="form-check-label" for="termsCheck">
+            I agree to the
+            <a href="/info/terms" target="_blank" class="text-primary"
+              >Terms of Service</a
+            >
+            and
+            <a href="/info/privacy" target="_blank" class="text-primary"
+              >Privacy Policy</a
+            >
+            <span class="text-danger">*</span>
+          </label>
+          <div class="invalid-feedback">
+            You must agree to the terms before submitting.
+          </div>
+        </div>
+
+        <div class="form-check mb-3">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="safetyCheck"
+            required
+          />
+          <label class="form-check-label" for="safetyCheck">
+            I have read and understand the
+            <a href="/info/safety" target="_blank" class="text-primary"
+              >Safety Guidelines</a
+            >
+            and
+            <a href="/info/community" target="_blank" class="text-primary"
+              >Community Standards</a
+            >
+            <span class="text-danger">*</span>
+          </label>
+          <div class="invalid-feedback">
+            Please acknowledge our safety and community guidelines.
+          </div>
+        </div>
+
+        <div class="form-check mb-4">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="infoCheck"
+            required
+          />
+          <label class="form-check-label" for="infoCheck">
+            I confirm that all the information provided is accurate and true
+            <span class="text-danger">*</span>
+          </label>
+          <div class="invalid-feedback">
+            Please confirm the accuracy of your information.
+          </div>
+        </div>
+
+        <!-- Help Resources -->
+        <div class="alert alert-info mb-4">
+          <h6 class="alert-heading">
+            <i class="bi bi-lightbulb me-2"></i>Need Help?
+          </h6>
+          <p class="mb-2">Check out these resources before submitting:</p>
+          <div class="d-flex flex-wrap gap-2">
+            <a
+              href="/info/host-guide"
+              target="_blank"
+              class="btn btn-sm"
+              style="
+                color: #495057;
+                border: 1px solid #6c757d;
+                background-color: transparent;
+                transition: all 0.3s ease;
+                text-decoration: none;
+              "
+              onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.style.transform='translateY(-2px)'"
+              onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0px)'"
+            >
+              <i class="bi bi-book me-1"></i>Host Guide
+            </a>
+            <a
+              href="/info/help-center"
+              target="_blank"
+              class="btn btn-sm"
+              style="
+                color: #495057;
+                border: 1px solid #6c757d;
+                background-color: transparent;
+                transition: all 0.3s ease;
+                text-decoration: none;
+              "
+              onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.style.transform='translateY(-2px)'"
+              onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0px)'"
+            >
+              <i class="bi bi-question-circle me-1"></i>Help Center
+            </a>
+            <a
+              href="/info/faq"
+              target="_blank"
+              class="btn btn-sm"
+              style="
+                color: #495057;
+                border: 1px solid #6c757d;
+                background-color: transparent;
+                transition: all 0.3s ease;
+                text-decoration: none;
+              "
+              onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.style.transform='translateY(-2px)'"
+              onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0px)'"
+            >
+              <i class="bi bi-chat-square-text me-1"></i>FAQ
+            </a>
+            <a
+              href="/info/contact"
+              target="_blank"
+              class="btn btn-sm"
+              style="
+                color: #495057;
+                border: 1px solid #6c757d;
+                background-color: transparent;
+                transition: all 0.3s ease;
+                text-decoration: none;
+              "
+              onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.style.transform='translateY(-2px)'"
+              onmouseout="this.style.boxShadow='none'; this.style.transform='translateY(0px)'"
+            >
+              <i class="bi bi-telephone me-1"></i>Contact Support
+            </a>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <button class="btn btn-color btn-lg px-4" type="submit">
+            <i class="bi bi-send me-2"></i>Submit Application
+          </button>
+          <a href="/listings" class="text-muted go-back">
+            <i class="bi bi-caret-left-fill"></i>Go Back
+          </a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/host-apply.js"></script>
