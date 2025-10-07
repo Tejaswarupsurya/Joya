@@ -42,7 +42,7 @@ module.exports.validateSignup = (req, res, next) => {
   if (error) {
     const errmsg = error.details.map((el) => el.message).join(", ");
     req.flash("error", errmsg);
-    return res.redirect("/forgot");
+    return res.redirect("/signup");
   }
   next();
 };
@@ -54,7 +54,7 @@ module.exports.validateUpdatePassword = (req, res, next) => {
   if (error) {
     const errmsg = error.details.map((el) => el.message).join(", ");
     req.flash("error", errmsg);
-    return res.redirect("/forgot");
+    return res.redirect("/update-password");
   }
   next();
 };
