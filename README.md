@@ -28,6 +28,7 @@
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [Getting Started](#-getting-started)
+- [Testing](#-testing)
 - [Project Structure](#-project-structure)
 - [User Roles](#-user-roles)
 - [Deployment](#-deployment)
@@ -203,7 +204,34 @@ Visit: http://localhost:3000
 
 ---
 
-## 🧱 Project Structure
+## � Testing
+
+The Joya platform features a **comprehensive testing suite** powered by Jest and Supertest, ensuring reliability and quality across all features.
+
+### Quick Test Overview
+
+- **Coverage**: 74% test success rate (48/65 tests passing)
+- **Test Types**: Unit tests, integration tests, API endpoint testing
+- **Mocking**: Full service mocking (MongoDB, Cloudinary, Nodemailer, Mapbox)
+- **Environment**: Isolated test database with clean setup/teardown
+
+### Key Test Categories
+
+✅ **Authentication & Security** | ✅ **Email Integration** | ✅ **Data Validation**  
+✅ **Utility Functions** | ✅ **Error Handling** | ✅ **Frontend Integration**
+
+### Test Commands
+
+```bash
+npm test              # Run all tests
+npm run test:watch    # Run tests in watch mode
+```
+
+📋 **[Full Testing Documentation →](tests/README.md)** - Detailed test structure, mocking strategies, and technical notes.
+
+---
+
+## �🧱 Project Structure
 
 ```csharp
 Joya/
