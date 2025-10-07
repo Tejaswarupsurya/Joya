@@ -7,6 +7,16 @@ module.exports.addToWishlist = async (req, res) => {
     const { id } = req.params;
     const userId = req.user._id;
 
+    // Only users can use wishlist feature (not hosts or admins)
+    if (req.user.role !== "user") {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Wishlist feature is only available for users",
+        });
+    }
+
     // Check if listing exists
     const listing = await Listing.findById(id);
     if (!listing) {
@@ -43,6 +53,16 @@ module.exports.removeFromWishlist = async (req, res) => {
     const { id } = req.params;
     const userId = req.user._id;
 
+    // Only users can use wishlist feature (not hosts or admins)
+    if (req.user.role !== "user") {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Wishlist feature is only available for users",
+        });
+    }
+
     // Remove from wishlist
     await User.findByIdAndUpdate(userId, {
       $pull: { wishlist: id },
@@ -62,6 +82,16 @@ module.exports.toggleWishlist = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user._id;
+
+    // Only users can use wishlist feature (not hosts or admins)
+    if (req.user.role !== "user") {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Wishlist feature is only available for users",
+        });
+    }
 
     // Check if listing exists
     const listing = await Listing.findById(id);

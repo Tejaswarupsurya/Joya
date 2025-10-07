@@ -32,7 +32,7 @@
       </div>
       <div class="col-md-4 text-md-end">
         <div class="d-flex gap-2 justify-content-end">
-          <span class="badge bg-primary fs-6" id="totalCount">
+          <span class="badge badge-total-count fs-6" id="totalCount">
             <%= applications.length %> Applications
           </span>
         </div>
@@ -73,7 +73,9 @@
             type="button"
           >
             Pending
-            <span class="badge bg-warning text-dark ms-1" id="pending-count"
+            <span
+              class="badge badge-status-pending text-dark ms-1"
+              id="pending-count"
               >0</span
             >
           </button>
@@ -86,7 +88,9 @@
             type="button"
           >
             Approved
-            <span class="badge bg-success ms-1" id="approved-count">0</span>
+            <span class="badge badge-status-approved ms-1" id="approved-count"
+              >0</span
+            >
           </button>
         </li>
         <li class="nav-item" role="presentation">
@@ -97,7 +101,9 @@
             type="button"
           >
             Rejected
-            <span class="badge bg-danger ms-1" id="rejected-count">0</span>
+            <span class="badge badge-status-rejected ms-1" id="rejected-count"
+              >0</span
+            >
           </button>
         </li>
       </ul>
@@ -175,15 +181,15 @@
                 </td>
                 <td>
                   <% if (application.host.status === 'pending') { %>
-                  <span class="badge bg-warning text-dark">
+                  <span class="badge badge-status-pending">
                     <i class="bi bi-clock me-1"></i>Pending
                   </span>
                   <% } else if (application.host.status === 'approved') { %>
-                  <span class="badge bg-success">
+                  <span class="badge badge-status-approved">
                     <i class="bi bi-check-circle me-1"></i>Approved
                   </span>
                   <% } else if (application.host.status === 'rejected') { %>
-                  <span class="badge bg-danger">
+                  <span class="badge badge-status-rejected">
                     <i class="bi bi-x-circle me-1"></i>Rejected
                   </span>
                   <% } %>

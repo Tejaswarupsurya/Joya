@@ -81,7 +81,7 @@
       />
 
       <!-- Wishlist Heart Icon -->
-      <% if (typeof currUser !== 'undefined' && currUser) { %>
+      <% if (typeof currUser !== 'undefined' && currUser && currUser.role === 'user') { %>
       <button
         class="wishlist-btn <%= userWishlist.includes(listing._id.toString()) ? 'active' : '' %>"
         data-listing-id="<%= listing._id %>"
