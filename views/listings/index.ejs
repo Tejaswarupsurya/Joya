@@ -82,11 +82,22 @@
 
       <!-- Wishlist Heart Icon -->
       <% if (typeof currUser !== 'undefined' && currUser && currUser.role === 'user') { %>
+      <!-- Logged-in user: functional wishlist -->
       <button
         class="wishlist-btn <%= userWishlist.includes(listing._id.toString()) ? 'active' : '' %>"
         data-listing-id="<%= listing._id %>"
         onclick="event.stopPropagation(); toggleWishlist('<%= listing._id %>', this);"
         title="Add to Wishlist"
+      >
+        <i class="bi bi-heart-fill"></i>
+      </button>
+      <% } else { %>
+      <!-- Guest user: redirect to signup -->
+      <button
+        class="wishlist-btn"
+        data-listing-id="<%= listing._id %>"
+        onclick="event.stopPropagation(); redirectToSignup();"
+        title="Sign up to save favorites"
       >
         <i class="bi bi-heart-fill"></i>
       </button>

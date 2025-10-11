@@ -41,3 +41,17 @@ function toggleWishlist(listingId, button) {
       alert("Failed to update wishlist");
     });
 }
+
+// Redirect to signup function for guests
+function redirectToSignup() {
+  // Add a brief animation to the heart before redirecting
+  const clickedButton = event.target.closest(".wishlist-btn");
+  if (clickedButton) {
+    clickedButton.classList.add("clicked");
+    setTimeout(() => {
+      window.location.href = "/signup";
+    }, 200); // Small delay for visual feedback
+  } else {
+    window.location.href = "/signup";
+  }
+}
