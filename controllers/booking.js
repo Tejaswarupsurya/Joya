@@ -1,5 +1,6 @@
 ﻿const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
+const emailService = require("../utils/emailService.js");
 
 module.exports.renderNewForm = async (req, res) => {
   const listing = await Listing.findById(req.params.id);
@@ -103,7 +104,9 @@ module.exports.showBooking = async (req, res) => {
 
 module.exports.confirmBooking = async (req, res) => {
   const { id, bookingId } = req.params;
-  const booking = await Booking.findById(bookingId).populate("listing");
+  const booking = await Booking.findById(bookingId)
+    .populate("listing")
+    .populate("user", "email username");
   if (!booking) {
     req.flash("error", "Booking not found!");
     return res.redirect(`/listings/${id}`);
@@ -129,20 +132,61 @@ module.exports.confirmBooking = async (req, res) => {
   booking.expiresAt = null; // Remove expiration date for confirmed bookings
   await booking.save();
 
+  // Send booking confirmation email
+  try {
+    const bookingDetails = {
+      listing: booking.listing,
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
+      guests: booking.guests,
+      totalPrice: booking.totalPrice,
+    };
+
+    await emailService.sendBookingConfirmation(
+      booking.user.email,
+      booking.user.username,
+      bookingDetails
+    );
+  } catch (emailError) {
+    console.error("Failed to send booking confirmation email:", emailError);
+  }
+
   req.flash("success", "Booking confirmed successfully!");
   res.redirect(`/listings/${id}/bookings/${bookingId}`);
 };
 
 module.exports.cancelBooking = async (req, res) => {
-  const booking = await Booking.findById(req.params.bookingId).populate(
-    "listing"
-  );
+  const booking = await Booking.findById(req.params.bookingId)
+    .populate("listing")
+    .populate("user", "email username");
   if (!booking) {
     req.flash("error", "Booking not found!");
     return res.redirect("/listings");
   }
+
   booking.status = "cancelled";
   await booking.save();
+
+  // Send booking cancellation email
+  try {
+    const bookingDetails = {
+      listing: booking.listing,
+      checkIn: booking.checkIn,
+      checkOut: booking.checkOut,
+      guests: booking.guests,
+      totalPrice: booking.totalPrice,
+      cancellationReason: "Cancelled by user",
+    };
+
+    await emailService.sendBookingCancellation(
+      booking.user.email,
+      booking.user.username,
+      bookingDetails
+    );
+  } catch (emailError) {
+    console.error("Failed to send booking cancellation email:", emailError);
+  }
+
   req.flash("success", "Booking cancelled successfully!");
   res.redirect(`/listings/${booking.listing._id}`);
 };

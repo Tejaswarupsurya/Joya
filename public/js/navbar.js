@@ -35,21 +35,31 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Enhanced dropdown hover effects
+  // Enhanced dropdown hover effects with delay
   const dropdown = document.querySelector(".dropdown");
   const dropdownMenu = document.querySelector(".dropdown-menu");
+  let hideTimeout;
 
   if (dropdown && dropdownMenu) {
     dropdown.addEventListener("mouseenter", function () {
+      // Clear any pending hide timeout
+      if (hideTimeout) {
+        clearTimeout(hideTimeout);
+        hideTimeout = null;
+      }
+
       this.querySelector('[data-bs-toggle="dropdown"]').classList.add("show");
       dropdownMenu.classList.add("show");
     });
 
     dropdown.addEventListener("mouseleave", function () {
-      this.querySelector('[data-bs-toggle="dropdown"]').classList.remove(
-        "show"
-      );
-      dropdownMenu.classList.remove("show");
+      // Add a delay before hiding to allow cursor movement to dropdown
+      hideTimeout = setTimeout(() => {
+        this.querySelector('[data-bs-toggle="dropdown"]').classList.remove(
+          "show"
+        );
+        dropdownMenu.classList.remove("show");
+      }, 300); // 300ms delay - enough time to move cursor to dropdown
     });
   }
 });

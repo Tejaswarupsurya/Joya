@@ -1,5 +1,6 @@
 //mongodb Section
 const User = require("../models/user.js");
+const emailService = require("../utils/emailService.js");
 
 module.exports.renderApplyForm = async (req, res) => {
   // Simple check: user must be verified to access host form
@@ -56,6 +57,18 @@ module.exports.submitApplication = async (req, res) => {
     user.role = "host";
 
     await user.save();
+
+    // Send application received email
+    try {
+      await emailService.sendHostApplicationUpdate(
+        user.email,
+        user.username,
+        "pending",
+        "Thank you for your interest in becoming a host on Joya! We have received your application and our team will review it within 2-3 business days. We'll notify you once the review is complete."
+      );
+    } catch (emailError) {
+      console.error("Failed to send application received email:", emailError);
+    }
 
     req.flash(
       "success",

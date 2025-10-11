@@ -98,54 +98,62 @@ module.exports.renderForgotForm = (req, res) => {
 };
 
 module.exports.getCode = async (req, res) => {
-  const { username, email } = req.body;
-  const user = await User.findOne({ username, email });
+  try {
+    const { username, email } = req.body;
+    const user = await User.findOne({ username, email });
 
-  if (!user) {
-    return res.status(404).json({ success: false, error: "User not found." });
-  }
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found." });
+    }
 
-  const now = Date.now();
-  if (
-    user.resetCodeExpires &&
-    user.resetCodeExpires > now &&
-    now - (user.resetCodeExpires - 10 * 60 * 1000) < 60 * 1000
-  ) {
-    return res.status(429).json({
-      success: false,
-      error: "Please wait 1 minute before requesting again.",
-    });
-  }
+    const now = Date.now();
+    if (
+      user.resetCodeExpires &&
+      user.resetCodeExpires > now &&
+      now - (user.resetCodeExpires - 10 * 60 * 1000) < 60 * 1000
+    ) {
+      return res.status(429).json({
+        success: false,
+        error: "Please wait 1 minute before requesting again.",
+      });
+    }
 
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  user.resetCode = code;
-  user.resetCodeExpires = now + 10 * 60 * 1000;
-  await user.save();
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetCode = code;
+    user.resetCodeExpires = now + 10 * 60 * 1000;
+    await user.save();
 
-  // Send OTP via email
-  const emailResult = await emailService.sendOTP(email, username, code);
+    // Send OTP via email
+    const emailResult = await emailService.sendOTP(email, username, code);
 
-  if (emailResult.success) {
-    return res.json({
-      success: true,
-      message: "OTP sent to your email address. Please check your inbox.",
-      expiresIn: 600,
-    });
-  } else {
-    // Fallback: show OTP in development mode if email fails
-    if (process.env.NODE_ENV !== "production") {
+    if (emailResult.success) {
       return res.json({
         success: true,
-        code, // Only in development
-        message: "Email service unavailable. OTP shown below (dev mode only):",
+        message: "OTP sent to your email address. Please check your inbox.",
         expiresIn: 600,
       });
     } else {
-      return res.status(500).json({
-        success: false,
-        error: "Failed to send OTP. Please try again later.",
-      });
+      // Fallback: show OTP in development mode if email fails
+      if (process.env.NODE_ENV !== "production") {
+        return res.json({
+          success: true,
+          code, // Only in development
+          message:
+            "Email service unavailable. OTP shown below (dev mode only):",
+          expiresIn: 600,
+        });
+      } else {
+        return res.status(500).json({
+          success: false,
+          error: "Failed to send OTP. Please try again later.",
+        });
+      }
     }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: "Server error occurred. Please try again later.",
+    });
   }
 };
 
@@ -323,9 +331,21 @@ module.exports.renderDashboard = async (req, res) => {
     };
 
     // Get user with populated wishlist
-    const userWithWishlist = await User.findById(req.user._id).populate(
-      "wishlist"
-    );
+    const userWithWishlist = await User.findById(req.user._id).populate({
+      path: "wishlist",
+      populate: {
+        path: "reviews",
+      },
+    });
+
+    // Calculate average rating for each wishlist listing
+    if (userWithWishlist.wishlist) {
+      userWithWishlist.wishlist.forEach((listing) => {
+        if (listing.reviews) {
+          listing.avgRating = getAvgRating(listing.reviews);
+        }
+      });
+    }
 
     res.render("users/dashboard.ejs", {
       user: userWithWishlist,

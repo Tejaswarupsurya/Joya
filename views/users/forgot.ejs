@@ -26,15 +26,23 @@
         />
         <div class="invalid-feedback">Enter a valid Email</div>
       </div>
-  
+
       <div class="d-flex align-items-center mb-3">
-        <button type="button" class="btn btn-dark me-3" id="getCodeBtn">Get OTP</button>
+        <button type="button" class="btn btn-dark me-3" id="getCodeBtn">
+          Get OTP
+        </button>
         <small id="timerText" class="text-muted"></small>
       </div>
 
       <div class="mb-3">
         <label for="code" class="form-label">Enter OTP</label>
-        <input type="text" class="form-control" name="code" id="code" required>
+        <input
+          type="text"
+          class="form-control"
+          name="code"
+          id="code"
+          required
+        />
       </div>
 
       <div class="mb-3 position-relative">
@@ -46,9 +54,7 @@
           type="password"
           required
         />
-        <i
-          class="bi bi-eye-slash eye-toggle position-absolute end-0 me-3"
-        ></i>
+        <i class="bi bi-eye-slash eye-toggle position-absolute end-0 me-3"></i>
       </div>
 
       <div class="mb-3">
@@ -64,10 +70,29 @@
         <div class="invalid-feedback">Passwords not matched</div>
       </div>
 
-      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+      <div
+        class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2"
+      >
         <button class="btn btn-color" id="submitBtn">Reset Password</button>
-        <a href="/login" class="text-muted go-back"><i class="bi bi-caret-left-fill"></i>Go Back</a>
+        <a href="/login" class="text-muted go-back"
+          ><i class="bi bi-caret-left-fill"></i>Go Back</a
+        >
       </div>
+
+      <!-- Help Links -->
+      <div class="text-center mt-3">
+        <small class="text-muted">
+          Need help? Visit our
+          <a href="/info/help-center" target="_blank" class="text-primary"
+            >Help Center</a
+          >
+          or
+          <a href="/info/contact" target="_blank" class="text-primary"
+            >Contact Support</a
+          >
+        </small>
+      </div>
+      
       <br /><br />
     </form>
   </div>
@@ -91,5 +116,4 @@
     emailId: "email",
     timerTextId: "timerText",
   });
-
 </script>

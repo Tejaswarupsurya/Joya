@@ -44,6 +44,18 @@ module.exports.approveApplication = async (req, res) => {
 
     await user.save();
 
+    // Send approval email
+    try {
+      await emailService.sendHostApplicationUpdate(
+        user.email,
+        user.username,
+        "approved",
+        "Congratulations! Your host application has been approved. You can now start listing your properties on Joya and welcome guests to your space."
+      );
+    } catch (emailError) {
+      console.error("Failed to send approval email:", emailError);
+    }
+
     req.flash(
       "success",
       `Host application for ${user.username} has been approved successfully!`
@@ -78,6 +90,18 @@ module.exports.rejectApplication = async (req, res) => {
     // Keep role as "user" since they're not approved as host
 
     await user.save();
+
+    // Send rejection email
+    try {
+      await emailService.sendHostApplicationUpdate(
+        user.email,
+        user.username,
+        "rejected",
+        "Thank you for your interest in becoming a host on Joya. After reviewing your application, we're unable to approve it at this time. You're welcome to reapply in the future after addressing any concerns."
+      );
+    } catch (emailError) {
+      console.error("Failed to send rejection email:", emailError);
+    }
 
     req.flash(
       "success",
