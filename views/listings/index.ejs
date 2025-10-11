@@ -82,7 +82,6 @@
 
       <!-- Wishlist Heart Icon -->
       <% if (typeof currUser !== 'undefined' && currUser && currUser.role === 'user') { %>
-      <!-- Logged-in user: functional wishlist -->
       <button
         class="wishlist-btn <%= userWishlist.includes(listing._id.toString()) ? 'active' : '' %>"
         data-listing-id="<%= listing._id %>"
@@ -91,8 +90,7 @@
       >
         <i class="bi bi-heart-fill"></i>
       </button>
-      <% } else { %>
-      <!-- Guest user: redirect to signup -->
+      <% } else if (!currUser) { %>
       <button
         class="wishlist-btn"
         data-listing-id="<%= listing._id %>"
