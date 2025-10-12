@@ -14,6 +14,25 @@ class EmailService {
   }
 
   initializeTransporter() {
+    // Check for required environment variables
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      console.error("❌ Missing email environment variables:");
+      console.error(
+        "EMAIL_USER:",
+        process.env.EMAIL_USER ? "✅ Set" : "❌ Missing"
+      );
+      console.error(
+        "EMAIL_PASSWORD:",
+        process.env.EMAIL_PASSWORD ? "✅ Set" : "❌ Missing"
+      );
+      throw new Error("Email environment variables not configured");
+    }
+
+    console.log(
+      "📧 Initializing email transporter with user:",
+      process.env.EMAIL_USER
+    );
+
     // Gmail SMTP configuration (FREE)
     // You can also use Outlook, Yahoo, etc.
     this.transporter = nodemailer.createTransport({
@@ -22,7 +41,13 @@ class EmailService {
         user: process.env.EMAIL_USER, // Your Gmail address
         pass: process.env.EMAIL_PASSWORD, // Your Gmail app password
       },
+      // Add debug options
+      debug: process.env.NODE_ENV !== "production",
+      logger: process.env.NODE_ENV !== "production",
     });
+
+    // Test connection on initialization
+    this.testConnection();
 
     // Alternative: Custom SMTP configuration
     // this.transporter = nodemailer.createTransporter({
@@ -126,6 +151,8 @@ class EmailService {
 
   async sendEmailVerification(email, username, verificationUrl) {
     try {
+      console.log("📧 Preparing verification email for:", email);
+
       const mailOptions = {
         from: `"Joya Platform" <${process.env.EMAIL_USER}>`,
         to: email,
@@ -133,20 +160,26 @@ class EmailService {
         html: verificationTemplate(username, verificationUrl),
       };
 
+      console.log("📧 Sending verification email...");
       const result = await this.transporter.sendMail(mailOptions);
+      console.log("✅ Verification email sent successfully:", result.messageId);
+
       return { success: true, messageId: result.messageId };
     } catch (error) {
+      console.error("❌ Failed to send verification email:", error);
       return { success: false, error: error.message };
     }
   }
 
   async testConnection() {
     try {
+      console.log("📧 Testing email service connection...");
       await this.transporter.verify();
-      console.log("✅ Email service connection verified");
+      console.log("✅ Email service connection verified successfully");
       return true;
     } catch (error) {
       console.error("❌ Email service connection failed:", error.message);
+      console.error("❌ Full error:", error);
       return false;
     }
   }
