@@ -616,37 +616,37 @@
 <script src="/js/dashboard-wishlist.js"></script>
 
 <script>
-  // Resend email verification
-  async function resendVerification() {
+  // Resend email verification (using Promise then/catch instead of async/await)
+  function resendVerification() {
     const button = event.target;
     const originalText = button.textContent;
 
-    try {
-      button.textContent = "Sending...";
-      button.disabled = true;
+    button.textContent = "Sending...";
+    button.disabled = true;
 
-      const response = await fetch("/send-verification", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+    fetch("/send-verification", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.success) {
+          alert(
+            "✅ Verification email sent! Please check your inbox and spam folder."
+          );
+        } else {
+          alert("❌ " + (result.error || "Failed to send verification email"));
+        }
+      })
+      .catch((error) => {
+        console.error("Error sending verification:", error);
+        alert("❌ Failed to send verification email. Please try again.");
+      })
+      .finally(() => {
+        button.textContent = originalText;
+        button.disabled = false;
       });
-
-      const result = await response.json();
-
-      if (result.success) {
-        alert(
-          "✅ Verification email sent! Please check your inbox and spam folder."
-        );
-      } else {
-        alert("❌ " + (result.error || "Failed to send verification email"));
-      }
-    } catch (error) {
-      console.error("Error sending verification:", error);
-      alert("❌ Failed to send verification email. Please try again.");
-    } finally {
-      button.textContent = originalText;
-      button.disabled = false;
-    }
   }
 </script>
