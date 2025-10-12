@@ -402,9 +402,7 @@
               href="/listings/<%= booking.listing._id %>/bookings/<%= booking._id %>"
               class="btn w-100 <%= isExpiringSoon ? 'btn-warning' : 'btn-pending-action' %>"
             >
-              <i class="bi bi-hand-thumbs-up me-2"></i><%= isExpiringSoon
-              ?'Waiting for confirmation (Urgent!)' : 'Waiting for
-              yourconfirmation' %>
+              <i class="bi bi-hand-thumbs-up me-2"></i><%= isExpiringSoon ?'Waiting for confirmation (Urgent!)' : 'Waiting for yourconfirmation' %>
             </a>
             <% } %>
           </div>
@@ -584,8 +582,7 @@
                   <div>
                     <small class="text-muted d-block">Guests</small>
                     <strong class="text-muted"
-                      ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest'
-                      : 'Guests' %></strong
+                      ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' : 'Guests' %></strong
                     >
                   </div>
                 </div>
