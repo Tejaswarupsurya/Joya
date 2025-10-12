@@ -50,9 +50,17 @@ router.post(
 
       res.json(response);
     } else {
+      // Provide more user-friendly error message
+      let errorMessage = "Failed to send verification email. Please try again.";
+
+      if (emailResult.error && emailResult.error.includes("timeout")) {
+        errorMessage =
+          "Email service is temporarily unavailable. Please try again in a few moments.";
+      }
+
       res.status(500).json({
         success: false,
-        error: `Failed to send email: ${emailResult.error}`,
+        error: errorMessage,
       });
     }
   })

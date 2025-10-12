@@ -15,8 +15,13 @@ class EmailService {
     if (this.isInitialized) return;
 
     try {
-      // Generate test account automatically (no manual signup needed)
-      const testAccount = await nodemailer.createTestAccount();
+      // Add timeout for createTestAccount to prevent hanging
+      const testAccount = await Promise.race([
+        nodemailer.createTestAccount(),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Connection timeout")), 60000)
+        ),
+      ]);
 
       this.transporter = nodemailer.createTransport({
         host: "smtp.ethereal.email",
@@ -26,13 +31,19 @@ class EmailService {
           user: testAccount.user, // Auto-generated
           pass: testAccount.pass, // Auto-generated
         },
+        connectionTimeout: 60000, // 60 seconds
+        greetingTimeout: 30000, // 30 seconds
+        socketTimeout: 60000, // 60 seconds
       });
 
       console.log("📧 Email service ready (Ethereal for preview URLs)");
       console.log(`📧 Test inbox: https://ethereal.email/messages`);
     } catch (error) {
+      console.warn(
+        "📧 Ethereal email service failed, using fallback:",
+        error.message
+      );
       // Fallback to console logging if Ethereal fails
-      console.log("📧 Email service using console logging");
       this.transporter = {
         sendMail: async (options) => {
           console.log("📧 Email would be sent:", {
@@ -71,7 +82,13 @@ class EmailService {
           html: otpTemplate(username, otp),
         };
 
-        const result = await this.transporter.sendMail(mailOptions);
+        // Add timeout to email sending
+        const result = await Promise.race([
+          this.transporter.sendMail(mailOptions),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("Email sending timeout")), 60000)
+          ),
+        ]);
 
         const response = {
           success: true,
@@ -101,11 +118,11 @@ class EmailService {
 
     return {
       success: false,
-      error: lastError?.message || "Unknown email error",
+      error: lastError?.message?.includes("timeout")
+        ? "Connection timeout"
+        : lastError?.message || "Unknown email error",
     };
-  }
-
-  // Email verification for new users
+  } // Email verification for new users
   async sendEmailVerification(email, username, verificationUrl) {
     await this.ensureInitialized();
 
@@ -117,7 +134,13 @@ class EmailService {
         html: verificationTemplate(username, verificationUrl),
       };
 
-      const result = await this.transporter.sendMail(mailOptions);
+      // Add timeout to email sending
+      const result = await Promise.race([
+        this.transporter.sendMail(mailOptions),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Email sending timeout")), 60000)
+        ),
+      ]);
 
       const response = {
         success: true,
@@ -135,10 +158,14 @@ class EmailService {
 
       return response;
     } catch (error) {
-      return { success: false, error: error.message };
+      return {
+        success: false,
+        error: error.message.includes("timeout")
+          ? "Connection timeout"
+          : error.message,
+      };
     }
   }
-
   async testConnection() {
     await this.ensureInitialized();
 
