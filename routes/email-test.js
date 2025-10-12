@@ -6,12 +6,16 @@ const emailService = require("../utils/emailService.js");
 // Test email functionality - REMOVE IN PRODUCTION
 router.get("/test-email", async (req, res) => {
   try {
-    // Check if user is admin (for security)
-    if (!req.user || req.user.role !== "admin") {
-      return res.status(403).json({ error: "Unauthorized" });
+    // For debugging - temporarily allow any logged-in user
+    // CHANGE THIS BACK TO ADMIN-ONLY IN PRODUCTION
+    if (!req.user) {
+      return res.status(403).json({
+        error: "Please log in first to access email diagnostics",
+        instructions: "Log in with any account to test email functionality",
+      });
     }
 
-    console.log("🧪 Starting email diagnostics...");
+    console.log("🧪 Starting email diagnostics for user:", req.user.username);
 
     // 1. Check environment variables
     const envCheck = {

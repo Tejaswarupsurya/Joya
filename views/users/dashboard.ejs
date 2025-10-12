@@ -403,7 +403,8 @@
               class="btn w-100 <%= isExpiringSoon ? 'btn-warning' : 'btn-pending-action' %>"
             >
               <i class="bi bi-hand-thumbs-up me-2"></i><%= isExpiringSoon ?
-              'Waiting for confirmation (Urgent!)' : 'Waiting for your confirmation' %>
+              'Waiting for confirmation (Urgent!)' : 'Waiting for your
+              confirmation' %>
             </a>
             <% } %>
           </div>
@@ -617,7 +618,16 @@
 <script>
   // Resend email verification
   async function resendVerification() {
+    const button = event.target;
+    const originalText = button.textContent;
+
     try {
+      // Show loading state
+      button.textContent = "Sending...";
+      button.disabled = true;
+
+      console.log("📧 Attempting to resend verification email...");
+
       const response = await fetch("/send-verification", {
         method: "POST",
         headers: {
@@ -625,16 +635,32 @@
         },
       });
 
+      console.log("📧 Response status:", response.status);
+
       const result = await response.json();
+      console.log("📧 Response result:", result);
 
       if (result.success) {
-        alert("✅ Verification email sent! Please check your inbox.");
+        alert(
+          "✅ Verification email sent successfully! Please check your inbox and spam folder."
+        );
       } else {
-        alert("❌ " + (result.error || "Failed to send verification email"));
+        // Show detailed error for debugging
+        const errorMsg = result.error || "Unknown error occurred";
+        console.error("❌ Email sending failed:", errorMsg);
+        alert(
+          `❌ Failed to send verification email:\n\n${errorMsg}\n\nPlease check the browser console for more details.`
+        );
       }
     } catch (error) {
-      console.error("Error sending verification:", error);
-      alert("❌ Failed to send verification email. Please try again.");
+      console.error("❌ Network/fetch error:", error);
+      alert(
+        `❌ Network error occurred:\n\n${error.message}\n\nPlease check your internet connection and try again.`
+      );
+    } finally {
+      // Restore button state
+      button.textContent = originalText;
+      button.disabled = false;
     }
   }
 </script>
