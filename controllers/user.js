@@ -46,10 +46,15 @@ module.exports.signup = async (req, res) => {
       return next(err);
     }
     if (emailResult.success) {
-      req.flash(
-        "success",
-        "Welcome to Joya! Please check your email to verify your account."
-      );
+      let message =
+        "Welcome to Joya! Please check your email to verify your account.";
+
+      // Add preview URL for production (Ethereal emails)
+      if (emailResult.previewUrl) {
+        message = `Welcome to Joya! Click here to view your verification email: ${emailResult.previewUrl}`;
+      }
+
+      req.flash("success", message);
     } else {
       req.flash(
         "success",
@@ -127,11 +132,19 @@ module.exports.getCode = async (req, res) => {
     const emailResult = await emailService.sendOTP(email, username, code);
 
     if (emailResult.success) {
-      return res.json({
+      const response = {
         success: true,
-        message: "OTP sent to your email address. Please check your inbox.",
+        message: "OTP sent to your email address.",
         expiresIn: 600,
-      });
+      };
+
+      // Include preview URL if available (for Ethereal email service)
+      if (emailResult.previewUrl) {
+        response.previewUrl = emailResult.previewUrl;
+        response.message = "OTP sent! Click the link below to view your email.";
+      }
+
+      return res.json(response);
     } else {
       // Fallback: show OTP in development mode if email fails
       if (process.env.NODE_ENV !== "production") {
@@ -234,10 +247,15 @@ module.exports.changeEmail = async (req, res) => {
   );
 
   if (emailResult.success) {
-    req.flash(
-      "success",
-      "Email updated! Please check your new email to verify your account."
-    );
+    let message =
+      "Email updated! Please check your new email to verify your account.";
+
+    // Add preview URL for production (Ethereal emails)
+    if (emailResult.previewUrl) {
+      message = `Email updated! Click here to view your verification email: ${emailResult.previewUrl}`;
+    }
+
+    req.flash("success", message);
   } else {
     req.flash(
       "success",

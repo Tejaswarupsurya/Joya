@@ -30,8 +30,16 @@ export function setupOtpHandler({
 
       const data = await res.json();
       if (data.success) {
+        // Check if preview URL is available (Ethereal email service)
+        if (data.previewUrl) {
+          let message = `✅ ${data.message}\n\n📧 View your OTP email: ${data.previewUrl}\n\nCode expires in 10 minutes.`;
+
+          if (confirm(message + "\n\nWould you like to open your email now?")) {
+            window.open(data.previewUrl, "_blank");
+          }
+        }
         // Check if we're in development mode and code is provided
-        if (data.code) {
+        else if (data.code) {
           alert(
             `Development Mode - Your reset code is: ${data.code} (valid for 10 minutes)\n\nIn production, this would be sent to your email.`
           );

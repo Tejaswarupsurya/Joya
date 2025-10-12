@@ -402,7 +402,9 @@
               href="/listings/<%= booking.listing._id %>/bookings/<%= booking._id %>"
               class="btn w-100 <%= isExpiringSoon ? 'btn-warning' : 'btn-pending-action' %>"
             >
-              <i class="bi bi-hand-thumbs-up me-2"></i><%= isExpiringSoon ?'Waiting for confirmation (Urgent!)' : 'Waiting for yourconfirmation' %>
+              <i class="bi bi-hand-thumbs-up me-2"></i><%= isExpiringSoon
+              ?'Waiting for confirmation (Urgent!)' : 'Waiting for
+              yourconfirmation' %>
             </a>
             <% } %>
           </div>
@@ -460,7 +462,8 @@
                 <div class="col-6">
                   <small class="text-muted d-block">To</small>
                   <strong
-                    ><%= new Date(booking.checkOut).toLocaleDateString('en-IN',{ day: 'numeric', month: 'short' }) %></strong
+                    ><%= new Date(booking.checkOut).toLocaleDateString('en-IN',{
+                    day: 'numeric', month: 'short' }) %></strong
                   >
                 </div>
               </div>
@@ -469,7 +472,9 @@
                 <div>
                   <small class="text-muted d-block">Guests</small>
                   <strong
-                    ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' : 'Guests' %></strong>
+                    ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' :
+                    'Guests' %></strong
+                  >
                 </div>
               </div>
             </div>
@@ -560,14 +565,18 @@
                   <div class="col-6">
                     <small class="text-muted d-block">Was for</small>
                     <strong class="text-muted"
-                      ><%= new Date(booking.checkIn).toLocaleDateString('en-IN',{ day: 'numeric', month: 'short' }) %></strong>
+                      ><%= new
+                      Date(booking.checkIn).toLocaleDateString('en-IN',{ day:
+                      'numeric', month: 'short' }) %></strong
+                    >
                   </div>
                   <div class="col-6">
                     <small class="text-muted d-block">To</small>
                     <strong class="text-muted"
                       ><%= new
                       Date(booking.checkOut).toLocaleDateString('en-IN', { day:
-                      'numeric', month: 'short' }) %></strong>
+                      'numeric', month: 'short' }) %></strong
+                    >
                   </div>
                 </div>
                 <hr class="my-3" />
@@ -576,7 +585,8 @@
                     <small class="text-muted d-block">Guests</small>
                     <strong class="text-muted"
                       ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest'
-                      : 'Guests' %></strong>
+                      : 'Guests' %></strong
+                    >
                   </div>
                 </div>
               </div>
@@ -626,18 +636,15 @@
         if (result.success) {
           let message = "✅ " + result.message;
 
-          // In development mode, show preview link
+          // Show preview link for Ethereal email service
           if (result.previewUrl) {
             message +=
-              "\n\n🔗 Development Mode: Click the link below to view the email:\n" +
+              "\n\n� View your email: Click the link below to access your verification email:\n" +
               result.previewUrl;
 
-            // Also show a more detailed alert with options
+            // Show alert with option to open email preview
             if (
-              confirm(
-                message +
-                  "\n\nWould you like to open the email preview in a new tab?"
-              )
+              confirm(message + "\n\nWould you like to open your email now?")
             ) {
               window.open(result.previewUrl, "_blank");
             }

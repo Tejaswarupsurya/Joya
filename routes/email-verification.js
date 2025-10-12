@@ -41,11 +41,11 @@ router.post(
         message: "Verification email sent!",
       };
 
-      // In development, include preview URL for Ethereal email
-      if (emailResult.previewUrl && process.env.NODE_ENV !== "production") {
+      // Include preview URL for Ethereal email (both dev and production)
+      if (emailResult.previewUrl) {
         response.previewUrl = emailResult.previewUrl;
         response.message =
-          "Verification email sent! Check the console or preview link.";
+          "Verification email sent! Click the link below to view your email.";
       }
 
       res.json(response);
