@@ -14,61 +14,32 @@ class EmailService {
   }
 
   initializeTransporter() {
-    // Check for required environment variables
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-      console.error("❌ Missing email environment variables:");
-      console.error(
-        "EMAIL_USER:",
-        process.env.EMAIL_USER ? "✅ Set" : "❌ Missing"
-      );
-      console.error(
-        "EMAIL_PASSWORD:",
-        process.env.EMAIL_PASSWORD ? "✅ Set" : "❌ Missing"
-      );
-      throw new Error("Email environment variables not configured");
+    // Use SendGrid if API key is available (recommended for production)
+    if (process.env.SENDGRID_API_KEY) {
+      console.log("📧 Using SendGrid email service");
+      this.transporter = nodemailer.createTransport({
+        service: "SendGrid",
+        auth: {
+          user: "apikey",
+          pass: process.env.SENDGRID_API_KEY,
+        },
+      });
+    } else if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
+      // Fallback to Gmail/Outlook SMTP
+      console.log("📧 Using SMTP email service with:", process.env.EMAIL_USER);
+      this.transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+    } else {
+      console.error("❌ Email service not configured. Please set either:");
+      console.error("- SENDGRID_API_KEY (recommended for production)");
+      console.error("- EMAIL_USER and EMAIL_PASSWORD (for Gmail/Outlook)");
+      throw new Error("Email service not configured");
     }
-
-    console.log(
-      "📧 Initializing email transporter with user:",
-      process.env.EMAIL_USER
-    );
-
-    // Try explicit SMTP configuration instead of "gmail" service
-    // This often works better in production environments
-    this.transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587, // Try 587 first (STARTTLS)
-      secure: false, // Use STARTTLS
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-      // Add connection and socket timeouts
-      connectionTimeout: 60000, // 60 seconds
-      greetingTimeout: 30000, // 30 seconds
-      socketTimeout: 60000, // 60 seconds
-      // Add debug options
-      debug: process.env.NODE_ENV !== "production",
-      logger: process.env.NODE_ENV !== "production",
-      // Ignore TLS errors (sometimes needed in production)
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
-
-    // Test connection on initialization
-    this.testConnection();
-
-    // Alternative: Custom SMTP configuration
-    // this.transporter = nodemailer.createTransporter({
-    //   host: process.env.SMTP_HOST,
-    //   port: process.env.SMTP_PORT,
-    //   secure: process.env.SMTP_SECURE === 'true',
-    //   auth: {
-    //     user: process.env.SMTP_USER,
-    //     pass: process.env.SMTP_PASSWORD
-    //   }
-    // });
   }
 
   async sendOTP(email, username, otp) {
@@ -161,120 +132,22 @@ class EmailService {
 
   async sendEmailVerification(email, username, verificationUrl) {
     try {
-      console.log("📧 Preparing verification email for:", email);
-
       const mailOptions = {
-        from: `"Joya Platform" <${process.env.EMAIL_USER}>`,
+        from: `"Joya Platform" <${
+          process.env.SENDGRID_API_KEY
+            ? process.env.EMAIL_USER || "noreply@joya.com"
+            : process.env.EMAIL_USER
+        }>`,
         to: email,
         subject: "Verify Your Email - Joya",
         html: verificationTemplate(username, verificationUrl),
       };
 
-      console.log("📧 Sending verification email...");
       const result = await this.transporter.sendMail(mailOptions);
-      console.log("✅ Verification email sent successfully:", result.messageId);
-
       return { success: true, messageId: result.messageId };
     } catch (error) {
-      console.error("❌ Failed to send verification email:", error);
       return { success: false, error: error.message };
     }
-  }
-
-  async testConnection() {
-    const configurations = [
-      // Try SendGrid first (if API key is available)
-      ...(process.env.SENDGRID_API_KEY
-        ? [
-            {
-              name: "SendGrid API (Recommended for production)",
-              config: {
-                service: "SendGrid",
-                auth: {
-                  user: "apikey",
-                  pass: process.env.SENDGRID_API_KEY,
-                },
-              },
-            },
-          ]
-        : []),
-
-      // Try Outlook if credentials are available
-      ...(process.env.EMAIL_USER && process.env.EMAIL_USER.includes("outlook")
-        ? [
-            {
-              name: "Outlook SMTP",
-              config: {
-                service: "Outlook365",
-                auth: {
-                  user: process.env.EMAIL_USER,
-                  pass: process.env.EMAIL_PASSWORD,
-                },
-                connectionTimeout: 30000,
-              },
-            },
-          ]
-        : []),
-
-      // Gmail configurations
-      {
-        name: "Gmail SMTP with STARTTLS (Port 587)",
-        config: {
-          host: "smtp.gmail.com",
-          port: 587,
-          secure: false,
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-          },
-          connectionTimeout: 30000,
-          tls: { rejectUnauthorized: false },
-        },
-      },
-      {
-        name: "Gmail SMTP with SSL (Port 465)",
-        config: {
-          host: "smtp.gmail.com",
-          port: 465,
-          secure: true,
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-          },
-          connectionTimeout: 30000,
-          tls: { rejectUnauthorized: false },
-        },
-      },
-      {
-        name: "Gmail Service (Simplified)",
-        config: {
-          service: "gmail",
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-          },
-          connectionTimeout: 30000,
-        },
-      },
-    ];
-
-    for (const { name, config } of configurations) {
-      try {
-        console.log(`📧 Testing ${name}...`);
-        const testTransporter = nodemailer.createTransport(config);
-        await testTransporter.verify();
-        console.log(`✅ ${name} - Connection successful!`);
-
-        // Update the main transporter to use the working configuration
-        this.transporter = testTransporter;
-        return true;
-      } catch (error) {
-        console.error(`❌ ${name} - Failed:`, error.message);
-      }
-    }
-
-    console.error("❌ All email service configurations failed");
-    return false;
   }
 }
 

@@ -12,69 +12,35 @@ const wrapAsync = require("../utils/wrapAsync.js");
 router.post(
   "/send-verification",
   wrapAsync(async (req, res) => {
-    try {
-      console.log(
-        "📧 Email verification request started for user:",
-        req.user._id
-      );
+    const user = await User.findById(req.user._id);
 
-      const user = await User.findById(req.user._id);
+    if (user.isEmailVerified) {
+      return res.json({ success: false, error: "Email already verified" });
+    }
 
-      if (user.isEmailVerified) {
-        console.log("❌ Email already verified for user:", user.email);
-        return res.json({ success: false, error: "Email already verified" });
-      }
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    user.emailVerificationToken = verificationToken;
+    user.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    await user.save();
 
-      // Check environment variables
-      if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-        console.error("❌ Missing email environment variables");
-        return res.status(500).json({
-          success: false,
-          error: "Email service not configured properly",
-        });
-      }
+    // Send verification email
+    const verificationUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/verify-email/${verificationToken}`;
 
-      console.log("📧 Generating verification token...");
-      // Generate verification token
-      const verificationToken = crypto.randomBytes(32).toString("hex");
-      user.emailVerificationToken = verificationToken;
-      user.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
-      await user.save();
+    const emailResult = await emailService.sendEmailVerification(
+      user.email,
+      user.username,
+      verificationUrl
+    );
 
-      // Send verification email
-      const verificationUrl = `${req.protocol}://${req.get(
-        "host"
-      )}/verify-email/${verificationToken}`;
-
-      console.log("📧 Attempting to send email to:", user.email);
-      console.log("📧 Verification URL:", verificationUrl);
-
-      const emailResult = await emailService.sendEmailVerification(
-        user.email,
-        user.username,
-        verificationUrl
-      );
-
-      console.log("📧 Email service result:", emailResult);
-
-      if (emailResult.success) {
-        console.log("✅ Verification email sent successfully to:", user.email);
-        res.json({ success: true, message: "Verification email sent!" });
-      } else {
-        console.error(
-          "❌ Failed to send verification email:",
-          emailResult.error
-        );
-        res.status(500).json({
-          success: false,
-          error: `Failed to send email: ${emailResult.error}`,
-        });
-      }
-    } catch (error) {
-      console.error("❌ Email verification route error:", error);
+    if (emailResult.success) {
+      res.json({ success: true, message: "Verification email sent!" });
+    } else {
       res.status(500).json({
         success: false,
-        error: `Server error: ${error.message}`,
+        error: `Failed to send email: ${emailResult.error}`,
       });
     }
   })

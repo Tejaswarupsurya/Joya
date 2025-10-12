@@ -622,11 +622,8 @@
     const originalText = button.textContent;
 
     try {
-      // Show loading state
       button.textContent = "Sending...";
       button.disabled = true;
-
-      console.log("📧 Attempting to resend verification email...");
 
       const response = await fetch("/send-verification", {
         method: "POST",
@@ -635,30 +632,19 @@
         },
       });
 
-      console.log("📧 Response status:", response.status);
-
       const result = await response.json();
-      console.log("📧 Response result:", result);
 
       if (result.success) {
         alert(
-          "✅ Verification email sent successfully! Please check your inbox and spam folder."
+          "✅ Verification email sent! Please check your inbox and spam folder."
         );
       } else {
-        // Show detailed error for debugging
-        const errorMsg = result.error || "Unknown error occurred";
-        console.error("❌ Email sending failed:", errorMsg);
-        alert(
-          `❌ Failed to send verification email:\n\n${errorMsg}\n\nPlease check the browser console for more details.`
-        );
+        alert("❌ " + (result.error || "Failed to send verification email"));
       }
     } catch (error) {
-      console.error("❌ Network/fetch error:", error);
-      alert(
-        `❌ Network error occurred:\n\n${error.message}\n\nPlease check your internet connection and try again.`
-      );
+      console.error("Error sending verification:", error);
+      alert("❌ Failed to send verification email. Please try again.");
     } finally {
-      // Restore button state
       button.textContent = originalText;
       button.disabled = false;
     }
