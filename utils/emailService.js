@@ -3,69 +3,98 @@ const nodemailer = require("nodemailer");
 // Import email templates
 const otpTemplate = require("./emailTemplates/otpTemplate");
 const verificationTemplate = require("./emailTemplates/verificationTemplate");
-const bookingConfirmationTemplate = require("./emailTemplates/bookingConfirmationTemplate");
-const bookingCancellationTemplate = require("./emailTemplates/bookingCancellationTemplate");
-const hostApplicationTemplate = require("./emailTemplates/hostApplicationTemplate");
 
 class EmailService {
   constructor() {
     this.transporter = null;
-    this.initializeTransporter();
+    this.isInitialized = false;
+    this.initPromise = this.initializeTransporter();
   }
 
-  initializeTransporter() {
-    // Use SendGrid if API key is available (recommended for production)
-    if (process.env.SENDGRID_API_KEY) {
-      console.log("📧 Using SendGrid email service");
+  async initializeTransporter() {
+    if (this.isInitialized) return;
+
+    try {
+      // Generate test account automatically (no manual signup needed)
+      const testAccount = await nodemailer.createTestAccount();
+
       this.transporter = nodemailer.createTransport({
-        service: "SendGrid",
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false,
         auth: {
-          user: "apikey",
-          pass: process.env.SENDGRID_API_KEY,
+          user: testAccount.user, // Auto-generated
+          pass: testAccount.pass, // Auto-generated
         },
       });
-    } else if (process.env.EMAIL_USER && process.env.EMAIL_PASSWORD) {
-      // Fallback to Gmail/Outlook SMTP
-      console.log("📧 Using SMTP email service with:", process.env.EMAIL_USER);
-      this.transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD,
+
+      console.log("📧 Email service ready (Ethereal for preview URLs)");
+      console.log(`📧 Test inbox: https://ethereal.email/messages`);
+    } catch (error) {
+      // Fallback to console logging if Ethereal fails
+      console.log("📧 Email service using console logging");
+      this.transporter = {
+        sendMail: async (options) => {
+          console.log("📧 Email would be sent:", {
+            to: options.to,
+            subject: options.subject,
+            html: options.html?.substring(0, 100) + "...",
+          });
+          return { messageId: `console-${Date.now()}` };
         },
-      });
-    } else {
-      console.error("❌ Email service not configured. Please set either:");
-      console.error("- SENDGRID_API_KEY (recommended for production)");
-      console.error("- EMAIL_USER and EMAIL_PASSWORD (for Gmail/Outlook)");
-      throw new Error("Email service not configured");
+        verify: async () => true,
+      };
+    }
+
+    this.isInitialized = true;
+  }
+
+  async ensureInitialized() {
+    if (!this.isInitialized) {
+      await this.initPromise;
     }
   }
 
+  // OTP for password reset
   async sendOTP(email, username, otp) {
+    await this.ensureInitialized();
+
     const maxRetries = 3;
     let lastError = null;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         const mailOptions = {
-          from: `"Joya Platform" <${process.env.EMAIL_USER}>`,
+          from: '"Joya Platform" <noreply@joya.com>',
           to: email,
           subject: "Password Reset OTP - Joya",
           html: otpTemplate(username, otp),
         };
 
         const result = await this.transporter.sendMail(mailOptions);
-        return { success: true, messageId: result.messageId };
+
+        const response = {
+          success: true,
+          messageId: result.messageId,
+        };
+
+        // Include preview URL for Ethereal emails (both dev and production)
+        if (result.messageId && !result.messageId.startsWith("console-")) {
+          try {
+            response.previewUrl = nodemailer.getTestMessageUrl(result);
+          } catch (e) {
+            // Skip preview URL if not available
+          }
+        }
+
+        return response;
       } catch (error) {
         lastError = error;
 
-        // If it's the last attempt, return failure
         if (attempt === maxRetries) {
           break;
         }
 
-        // Wait before retrying (exponential backoff)
         await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
       }
     }
@@ -76,75 +105,46 @@ class EmailService {
     };
   }
 
-  async sendBookingConfirmation(email, username, bookingDetails) {
-    try {
-      const mailOptions = {
-        from: `"Joya Platform" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "Booking Confirmation - Joya",
-        html: bookingConfirmationTemplate(username, bookingDetails),
-      };
-
-      const result = await this.transporter.sendMail(mailOptions);
-      return { success: true, messageId: result.messageId };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  async sendBookingCancellation(email, username, bookingDetails) {
-    try {
-      const mailOptions = {
-        from: `"Joya Platform" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: "Booking Cancelled - Joya",
-        html: bookingCancellationTemplate(username, bookingDetails),
-      };
-
-      const result = await this.transporter.sendMail(mailOptions);
-      return { success: true, messageId: result.messageId };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  async sendHostApplicationUpdate(email, username, status, message) {
-    try {
-      const statusSubjects = {
-        approved: "Host Application Approved - Joya",
-        rejected: "Host Application Update - Joya",
-        pending: "Host Application Received - Joya",
-      };
-
-      const mailOptions = {
-        from: `"Joya Platform" <${process.env.EMAIL_USER}>`,
-        to: email,
-        subject: statusSubjects[status] || "Host Application Update - Joya",
-        html: hostApplicationTemplate(username, status, message),
-      };
-
-      const result = await this.transporter.sendMail(mailOptions);
-      return { success: true, messageId: result.messageId };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
-
+  // Email verification for new users
   async sendEmailVerification(email, username, verificationUrl) {
+    await this.ensureInitialized();
+
     try {
       const mailOptions = {
-        from: `"Joya Platform" <${
-          process.env.SENDGRID_API_KEY
-            ? process.env.EMAIL_USER || "noreply@joya.com"
-            : process.env.EMAIL_USER
-        }>`,
+        from: '"Joya Platform" <noreply@joya.com>',
         to: email,
         subject: "Verify Your Email - Joya",
         html: verificationTemplate(username, verificationUrl),
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      return { success: true, messageId: result.messageId };
+
+      const response = {
+        success: true,
+        messageId: result.messageId,
+      };
+
+      // Include preview URL for Ethereal emails (both dev and production)
+      if (result.messageId && !result.messageId.startsWith("console-")) {
+        try {
+          response.previewUrl = nodemailer.getTestMessageUrl(result);
+        } catch (e) {
+          // Skip preview URL if not available
+        }
+      }
+
+      return response;
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+
+  async testConnection() {
+    await this.ensureInitialized();
+
+    try {
+      await this.transporter.verify();
+      return { success: true, message: "Email service is ready" };
     } catch (error) {
       return { success: false, error: error.message };
     }

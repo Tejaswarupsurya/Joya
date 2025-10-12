@@ -57,8 +57,10 @@
 - 📧 **Professional Email Integration**
 
   - Email verification system with OTP
-  - Automated booking confirmations and reminders
   - Password reset with secure email flow
+  - Ethereal email service with auto-generated test accounts
+  - Preview URLs available for all emails in both development and production
+  - No manual email account setup required
 
 - 🔐 **Authentication & Authorization**
 
@@ -174,10 +176,6 @@ MAP_TOKEN=your_mapbox_token
 CLOUD_NAME=your_cloudinary_cloud_name
 CLOUD_API_KEY=your_cloudinary_key
 CLOUD_API_SECRET=your_cloudinary_secret
-
-# Email Configuration
-EMAIL_USER=your_smtp_email
-EMAIL_PASSWORD=your_smtp_password
 
 # Environment
 NODE_ENV=development

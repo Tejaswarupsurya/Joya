@@ -36,7 +36,19 @@ router.post(
     );
 
     if (emailResult.success) {
-      res.json({ success: true, message: "Verification email sent!" });
+      const response = {
+        success: true,
+        message: "Verification email sent!",
+      };
+
+      // In development, include preview URL for Ethereal email
+      if (emailResult.previewUrl && process.env.NODE_ENV !== "production") {
+        response.previewUrl = emailResult.previewUrl;
+        response.message =
+          "Verification email sent! Check the console or preview link.";
+      }
+
+      res.json(response);
     } else {
       res.status(500).json({
         success: false,

@@ -58,21 +58,9 @@ module.exports.submitApplication = async (req, res) => {
 
     await user.save();
 
-    // Send application received email
-    try {
-      await emailService.sendHostApplicationUpdate(
-        user.email,
-        user.username,
-        "pending",
-        "Thank you for your interest in becoming a host on Joya! We have received your application and our team will review it within 2-3 business days. We'll notify you once the review is complete."
-      );
-    } catch (emailError) {
-      console.error("Failed to send application received email:", emailError);
-    }
-
     req.flash(
       "success",
-      "Host application submitted successfully! We'll review your application and get back to you soon."
+      "Host application submitted successfully! We'll review your application within 2-3 business days and update your dashboard with the status."
     );
     res.redirect("/listings");
   } catch (error) {

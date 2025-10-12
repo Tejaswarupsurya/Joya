@@ -24,7 +24,7 @@ The Joya platform uses Jest for comprehensive testing with professional-grade mo
 - **Utility Functions**: Review calculations, search analytics
 - **Authentication System**: Login, signup, password reset pages
 - **Data Validation**: Schema validation for listings, reviews, users
-- **Email Service**: Professional email functionality with Gmail SMTP
+- **Email Service**: Professional email functionality with Ethereal SMTP and auto-generated test accounts
 - **Info Pages**: All static pages (terms, privacy, FAQ, etc.)
 - **Host System**: Host application pages
 - **Security & Error Handling**: ExpressError, 404 handling

@@ -132,26 +132,10 @@ module.exports.confirmBooking = async (req, res) => {
   booking.expiresAt = null; // Remove expiration date for confirmed bookings
   await booking.save();
 
-  // Send booking confirmation email
-  try {
-    const bookingDetails = {
-      listing: booking.listing,
-      checkIn: booking.checkIn,
-      checkOut: booking.checkOut,
-      guests: booking.guests,
-      totalPrice: booking.totalPrice,
-    };
-
-    await emailService.sendBookingConfirmation(
-      booking.user.email,
-      booking.user.username,
-      bookingDetails
-    );
-  } catch (emailError) {
-    console.error("Failed to send booking confirmation email:", emailError);
-  }
-
-  req.flash("success", "Booking confirmed successfully!");
+  req.flash(
+    "success",
+    "Booking confirmed successfully! You will receive further updates on your dashboard."
+  );
   res.redirect(`/listings/${id}/bookings/${bookingId}`);
 };
 
@@ -167,26 +151,9 @@ module.exports.cancelBooking = async (req, res) => {
   booking.status = "cancelled";
   await booking.save();
 
-  // Send booking cancellation email
-  try {
-    const bookingDetails = {
-      listing: booking.listing,
-      checkIn: booking.checkIn,
-      checkOut: booking.checkOut,
-      guests: booking.guests,
-      totalPrice: booking.totalPrice,
-      cancellationReason: "Cancelled by user",
-    };
-
-    await emailService.sendBookingCancellation(
-      booking.user.email,
-      booking.user.username,
-      bookingDetails
-    );
-  } catch (emailError) {
-    console.error("Failed to send booking cancellation email:", emailError);
-  }
-
-  req.flash("success", "Booking cancelled successfully!");
+  req.flash(
+    "success",
+    "Booking cancelled successfully! Your cancellation has been processed."
+  );
   res.redirect(`/listings/${booking.listing._id}`);
 };

@@ -1,23 +1,17 @@
 {
-  "totalSearches": 1,
+  "totalSearches": 2,
   "popularQueries": {
-    "nonexistentpropertysearch123": 1
+    "test query": 2
   },
-  "noResultsQueries": [
-    {
-      "query": "nonexistentpropertysearch123",
-      "timestamp": "2025-10-07T10:01:06.391Z",
-      "category": null,
-      "location": null
-    }
-  ],
-  "avgResultsPerSearch": 0,
+  "noResultsQueries": [],
+  "avgResultsPerSearch": 5,
   "searchTrends": {
-    "2025-10-07": {
-      "count": 1,
-      "avgResults": 0,
+    "2025-10-12": {
+      "count": 2,
+      "avgResults": 5,
       "queries": [
-        "nonexistentpropertysearch123"
+        "test query",
+        "test query"
       ]
     }
   }
