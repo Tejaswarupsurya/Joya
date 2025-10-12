@@ -33,17 +33,27 @@ class EmailService {
       process.env.EMAIL_USER
     );
 
-    // Gmail SMTP configuration (FREE)
-    // You can also use Outlook, Yahoo, etc.
+    // Try explicit SMTP configuration instead of "gmail" service
+    // This often works better in production environments
     this.transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587, // Try 587 first (STARTTLS)
+      secure: false, // Use STARTTLS
       auth: {
-        user: process.env.EMAIL_USER, // Your Gmail address
-        pass: process.env.EMAIL_PASSWORD, // Your Gmail app password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD,
       },
+      // Add connection and socket timeouts
+      connectionTimeout: 60000, // 60 seconds
+      greetingTimeout: 30000, // 30 seconds
+      socketTimeout: 60000, // 60 seconds
       // Add debug options
       debug: process.env.NODE_ENV !== "production",
       logger: process.env.NODE_ENV !== "production",
+      // Ignore TLS errors (sometimes needed in production)
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
 
     // Test connection on initialization
@@ -172,16 +182,99 @@ class EmailService {
   }
 
   async testConnection() {
-    try {
-      console.log("📧 Testing email service connection...");
-      await this.transporter.verify();
-      console.log("✅ Email service connection verified successfully");
-      return true;
-    } catch (error) {
-      console.error("❌ Email service connection failed:", error.message);
-      console.error("❌ Full error:", error);
-      return false;
+    const configurations = [
+      // Try SendGrid first (if API key is available)
+      ...(process.env.SENDGRID_API_KEY
+        ? [
+            {
+              name: "SendGrid API (Recommended for production)",
+              config: {
+                service: "SendGrid",
+                auth: {
+                  user: "apikey",
+                  pass: process.env.SENDGRID_API_KEY,
+                },
+              },
+            },
+          ]
+        : []),
+
+      // Try Outlook if credentials are available
+      ...(process.env.EMAIL_USER && process.env.EMAIL_USER.includes("outlook")
+        ? [
+            {
+              name: "Outlook SMTP",
+              config: {
+                service: "Outlook365",
+                auth: {
+                  user: process.env.EMAIL_USER,
+                  pass: process.env.EMAIL_PASSWORD,
+                },
+                connectionTimeout: 30000,
+              },
+            },
+          ]
+        : []),
+
+      // Gmail configurations
+      {
+        name: "Gmail SMTP with STARTTLS (Port 587)",
+        config: {
+          host: "smtp.gmail.com",
+          port: 587,
+          secure: false,
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+          connectionTimeout: 30000,
+          tls: { rejectUnauthorized: false },
+        },
+      },
+      {
+        name: "Gmail SMTP with SSL (Port 465)",
+        config: {
+          host: "smtp.gmail.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+          connectionTimeout: 30000,
+          tls: { rejectUnauthorized: false },
+        },
+      },
+      {
+        name: "Gmail Service (Simplified)",
+        config: {
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+          connectionTimeout: 30000,
+        },
+      },
+    ];
+
+    for (const { name, config } of configurations) {
+      try {
+        console.log(`📧 Testing ${name}...`);
+        const testTransporter = nodemailer.createTransport(config);
+        await testTransporter.verify();
+        console.log(`✅ ${name} - Connection successful!`);
+
+        // Update the main transporter to use the working configuration
+        this.transporter = testTransporter;
+        return true;
+      } catch (error) {
+        console.error(`❌ ${name} - Failed:`, error.message);
+      }
     }
+
+    console.error("❌ All email service configurations failed");
+    return false;
   }
 }
 
