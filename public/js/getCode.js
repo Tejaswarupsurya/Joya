@@ -30,22 +30,25 @@ export function setupOtpHandler({
 
       const data = await res.json();
       if (data.success) {
-        // Check if preview URL is available (Ethereal email service)
-        if (data.previewUrl) {
+        // UI MODE: Show OTP code directly in alert
+        if (data.showInUI && data.code) {
+          alert(
+            data.uiMessage ||
+              `🔐 Your Password Reset Code\n\n${data.code}\n\nThis code expires in 10 minutes.`
+          );
+        }
+        // Fallback for other cases
+        else if (data.previewUrl) {
           let message = `✅ ${data.message}\n\n📧 View your OTP email: ${data.previewUrl}\n\nCode expires in 10 minutes.`;
 
           if (confirm(message + "\n\nWould you like to open your email now?")) {
             window.open(data.previewUrl, "_blank");
           }
-        }
-        // Check if we're in development mode and code is provided
-        else if (data.code) {
-          alert(
-            `Development Mode - Your reset code is: ${data.code} (valid for 10 minutes)\n\nIn production, this would be sent to your email.`
-          );
+        } else if (data.code) {
+          alert(`Your reset code is: ${data.code}\n\nValid for 10 minutes.`);
         } else {
           alert(
-            `OTP sent successfully to your email address!\n\nPlease check your inbox and enter the 6-digit code below.\n\nCode expires in 10 minutes.`
+            `OTP sent successfully!\n\nPlease check your email for the 6-digit code.\n\nCode expires in 10 minutes.`
           );
         }
         setupCooldown(buttonId, timerTextId, 60);

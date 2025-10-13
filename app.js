@@ -48,7 +48,6 @@ const hostRouter = require("./routes/host");
 const adminRouter = require("./routes/admin");
 const wishlistRouter = require("./routes/wishlist");
 const searchRouter = require("./routes/search");
-const emailVerificationRouter = require("./routes/email-verification.js");
 
 //mongoAtlas & mongodb Section
 const dbUrl = process.env.ATLASDB_URL;
@@ -127,7 +126,6 @@ app.use("/", searchRouter);
 app.use("/", adminRouter);
 app.use("/", hostRouter);
 app.use("/", userRouter);
-app.use("/", emailVerificationRouter);
 
 app.all(/.*/, (req, res, next) => {
   next(new ExpressError(404, "Page not found!"));

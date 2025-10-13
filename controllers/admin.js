@@ -1,6 +1,5 @@
 //mongodb Section
 const User = require("../models/user.js");
-const emailService = require("../utils/emailService.js");
 
 // List all host applications (pending, approved, rejected) with filtering UI
 module.exports.listAllApplications = async (req, res) => {
@@ -109,38 +108,17 @@ module.exports.adminEmailRecovery = async (req, res) => {
         .json({ success: false, error: "Email already exists" });
     }
 
-    // Generate new verification token
-    const crypto = require("crypto");
-    const verificationToken = crypto.randomBytes(32).toString("hex");
-
-    // Update email and reset verification
+    // Update email and auto-verify it (no email sending)
     user.email = newEmail;
-    user.isEmailVerified = false;
-    user.emailVerificationToken = verificationToken;
-    user.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
     await user.save();
 
-    // Send verification email to new address
-    const verificationUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/verify-email/${verificationToken}`;
-    const emailResult = await emailService.sendEmailVerification(
-      newEmail,
-      user.username,
-      verificationUrl
-    );
-
-    if (emailResult.success) {
-      res.json({
-        success: true,
-        message: `Email updated to ${newEmail}. Verification email sent.`,
-      });
-    } else {
-      res.json({
-        success: true,
-        message: `Email updated to ${newEmail}. Verification email will be sent shortly.`,
-      });
-    }
+    res.json({
+      success: true,
+      message: `Email updated to ${newEmail} and automatically verified.`,
+    });
   } catch (error) {
     console.error("Error in admin email recovery:", error);
     res.status(500).json({ success: false, error: "Failed to update email" });

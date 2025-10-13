@@ -11,8 +11,6 @@ process.env.CLOUD_NAME = process.env.CLOUD_NAME || "test-cloud";
 process.env.CLOUD_API_KEY = process.env.CLOUD_API_KEY || "test-api-key";
 process.env.CLOUD_API_SECRET =
   process.env.CLOUD_API_SECRET || "test-api-secret";
-process.env.EMAIL_USER = process.env.EMAIL_USER || "test@gmail.com";
-process.env.EMAIL_PASS = process.env.EMAIL_PASS || "test-password";
 
 // Mock console methods for cleaner test output
 global.console = {
@@ -293,24 +291,12 @@ jest.mock("multer", () => {
   }));
 });
 
-// Mock nodemailer
-jest.mock("nodemailer", () => ({
-  createTransport: jest.fn().mockReturnValue({
-    sendMail: jest.fn().mockResolvedValue({
-      messageId: "test-message-id",
-      response: "250 OK",
-    }),
-    verify: jest.fn().mockResolvedValue(true),
-  }),
-}));
 process.env.SECRET = process.env.SECRET || "test-secret";
 process.env.MAP_TOKEN = process.env.MAP_TOKEN || "test-mapbox-token";
 process.env.CLOUD_NAME = process.env.CLOUD_NAME || "test-cloud";
 process.env.CLOUD_API_KEY = process.env.CLOUD_API_KEY || "test-api-key";
 process.env.CLOUD_API_SECRET =
   process.env.CLOUD_API_SECRET || "test-api-secret";
-process.env.EMAIL_USER = process.env.EMAIL_USER || "test@gmail.com";
-process.env.EMAIL_PASS = process.env.EMAIL_PASS || "test-password";
 
 // Mock console methods for cleaner test output
 global.console = {

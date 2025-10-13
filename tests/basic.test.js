@@ -101,5 +101,3 @@ describe("Performance & Security", () => {
   });
 });
 
-// Note: Email service tests would require nodemailer to be installed
-// For now, we're focusing on core utility testing

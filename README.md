@@ -4,7 +4,7 @@
 
 > A full-stack travel listing platform to explore, list, and review unique homestays and local experiences — featuring artistic UI, advanced booking system, admin dashboards, email integration, wishlist management, and comprehensive analytics.
 
-🛠️ Built solo with ❤️ using Node.js, Express, MongoDB, Passport.js, Nodemailer, Jest & Bootstrap (open to collabs!).
+🛠️ Built solo with ❤️ using Node.js, Express, MongoDB, Passport.js, Jest & Bootstrap (open to collabs!).
 
 ---
 
@@ -54,18 +54,17 @@
   - Host application system with approval workflow
   - Role-based access control and permissions
 
-- 📧 **Professional Email Integration**
+- 📧 **UI-Based Authentication System**
 
-  - Email verification system with OTP
-  - Password reset with secure email flow
-  - Ethereal email service with auto-generated test accounts
-  - Preview URLs available for all emails in both development and production
-  - No manual email account setup required
+  - Direct OTP display in browser alerts for password reset
+  - Auto-verification system for instant email verification
+  - Streamlined user flows without external dependencies
+  - No email service setup required
 
 - 🔐 **Authentication & Authorization**
 
   - Passport.js for signup/login with sessions
-  - Forgot & Reset Password with OTP flow
+  - Forgot & Reset Password with UI-based OTP flow
   - Protected routes and role-based actions
 
 - 🔍 **Advanced Search + Filters**
@@ -136,19 +135,19 @@
 
 ## 🧱 Tech Stack
 
-| Layer         | Technologies                            |
-| ------------- | --------------------------------------- |
-| Backend       | Node.js, Express 5, MongoDB, Mongoose   |
-| Frontend      | EJS, EJS-Mate, Bootstrap 5, Custom CSS  |
-| Auth          | Passport.js, passport-local-mongoose    |
-| Forms & Files | Multer, Cloudinary                      |
-| UI/UX         | Plus Jakarta Sans, Custom Animations    |
-| Email         | Nodemailer, SMTP Integration            |
-| Testing       | Jest, Supertest, Coverage Reports       |
-| Mapping       | Mapbox SDK                              |
-| Analytics     | Custom Search & Booking Analytics       |
-| Dev Tools     | Nodemon, dotenv, connect-flash          |
-| Security      | Helmet, Joi, compression, rate limiting |
+| Layer          | Technologies                            |
+| -------------- | --------------------------------------- |
+| Backend        | Node.js, Express 5, MongoDB, Mongoose   |
+| Frontend       | EJS, EJS-Mate, Bootstrap 5, Custom CSS  |
+| Auth           | Passport.js, passport-local-mongoose    |
+| Forms & Files  | Multer, Cloudinary                      |
+| UI/UX          | Plus Jakarta Sans, Custom Animations    |
+| Authentication | UI-Based OTP, Direct Code Display       |
+| Testing        | Jest, Supertest, Coverage Reports       |
+| Mapping        | Mapbox SDK                              |
+| Analytics      | Custom Search & Booking Analytics       |
+| Dev Tools      | Nodemon, dotenv, connect-flash          |
+| Security       | Helmet, Joi, compression, rate limiting |
 
 ---
 
@@ -210,7 +209,7 @@ The Joya platform features a **comprehensive testing suite** powered by Jest and
 
 - **Coverage**: 74% test success rate (48/65 tests passing)
 - **Test Types**: Unit tests, integration tests, API endpoint testing
-- **Mocking**: Full service mocking (MongoDB, Cloudinary, Nodemailer, Mapbox)
+- **Mocking**: Full service mocking (MongoDB, Cloudinary, Mapbox)
 - **Environment**: Isolated test database with clean setup/teardown
 
 ### Key Test Categories
@@ -249,7 +248,6 @@ Joya/
 │   ├── css/          # Stylesheets (including no-results.css)
 │   └── js/           # Client-side JavaScript
 ├── utils/            # Custom middleware & helpers
-│   ├── emailService.js    # Email integration
 │   ├── searchAnalytics.js # Search tracking
 │   └── bookingCleanup.js  # Automated cleanup
 ├── tests/            # Comprehensive test suite

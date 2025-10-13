@@ -60,6 +60,9 @@ router
 //get-code
 router.post("/get-code", wrapAsync(userController.getCode));
 
+//send-verification (UI-based auto-verification)
+router.post("/send-verification", wrapAsync(userController.sendVerification));
+
 //change email
 router
   .route("/change-email")

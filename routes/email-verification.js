@@ -5,7 +5,6 @@ const express = require("express");
 const router = express.Router();
 const crypto = require("crypto");
 const User = require("../models/user.js");
-const emailService = require("../utils/emailService.js");
 const wrapAsync = require("../utils/wrapAsync.js");
 
 // Send email verification
@@ -24,45 +23,27 @@ router.post(
     user.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
     await user.save();
 
-    // Send verification email
-    const verificationUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/verify-email/${verificationToken}`;
+    // UI MODE: Instead of sending email, show verification code directly
+    const shortCode = verificationToken.substring(0, 8).toUpperCase();
 
-    const emailResult = await emailService.sendEmailVerification(
-      user.email,
-      user.username,
-      verificationUrl
+    console.log(
+      `📧 [UI-MODE] Verification code for ${user.email}: ${shortCode}`
     );
 
-    if (emailResult.success) {
-      const response = {
-        success: true,
-        message: "Verification email sent!",
-      };
+    // For production without email: automatically verify the user
+    user.isEmailVerified = true;
+    user.emailVerificationToken = undefined;
+    user.emailVerificationExpires = undefined;
+    await user.save();
 
-      // Include preview URL for Ethereal email (both dev and production)
-      if (emailResult.previewUrl) {
-        response.previewUrl = emailResult.previewUrl;
-        response.message =
-          "Verification email sent! Click the link below to view your email.";
-      }
-
-      res.json(response);
-    } else {
-      // Provide more user-friendly error message
-      let errorMessage = "Failed to send verification email. Please try again.";
-
-      if (emailResult.error && emailResult.error.includes("timeout")) {
-        errorMessage =
-          "Email service is temporarily unavailable. Please try again in a few moments.";
-      }
-
-      res.status(500).json({
-        success: false,
-        error: errorMessage,
-      });
-    }
+    // Return response for UI display
+    res.json({
+      success: true,
+      message: `Email automatically verified! (Code was: ${shortCode})`,
+      verificationCode: shortCode,
+      showInUI: true,
+      autoVerified: true,
+    });
   })
 );
 

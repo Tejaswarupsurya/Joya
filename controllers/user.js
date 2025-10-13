@@ -2,7 +2,6 @@
 const User = require("../models/user.js");
 const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
-const emailService = require("../utils/emailService.js");
 
 module.exports.renderSignupForm = (req, res) => {
   res.render("./users/signup.ejs");
@@ -23,44 +22,21 @@ module.exports.signup = async (req, res) => {
   const newUser = new User({ email, username });
   const registeredUser = await User.register(newUser, password);
 
-  // Generate email verification token
-  const crypto = require("crypto");
-  const verificationToken = crypto.randomBytes(32).toString("hex");
-  registeredUser.emailVerificationToken = verificationToken;
-  registeredUser.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  // UI MODE: Auto-verify email instead of sending verification email
+  registeredUser.isEmailVerified = true; // Automatically verify
+  console.log(`📧 [UI-MODE] Auto-verified email for new user: ${email}`);
   await registeredUser.save();
-
-  // Send verification email
-  const verificationUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/verify-email/${verificationToken}`;
-  const emailResult = await emailService.sendEmailVerification(
-    email,
-    username,
-    verificationUrl
-  );
 
   redirectUrl = req.session.redirectUrl || "/listings";
   req.login(registeredUser, (err) => {
     if (err) {
       return next(err);
     }
-    if (emailResult.success) {
-      let message =
-        "Welcome to Joya! Please check your email to verify your account.";
 
-      // Add preview URL for production (Ethereal emails)
-      if (emailResult.previewUrl) {
-        message = `Welcome to Joya! Click here to view your verification email: ${emailResult.previewUrl}`;
-      }
-
-      req.flash("success", message);
-    } else {
-      req.flash(
-        "success",
-        "Welcome to Joya! (Email verification will be sent shortly)"
-      );
-    }
+    req.flash(
+      "success",
+      "Welcome to Joya! Your account has been created and verified."
+    );
     res.redirect(redirectUrl);
   });
 };
@@ -102,108 +78,6 @@ module.exports.renderForgotForm = (req, res) => {
   res.render("./users/forgot.ejs");
 };
 
-module.exports.getCode = async (req, res) => {
-  try {
-    const { username, email } = req.body;
-    const user = await User.findOne({ username, email });
-
-    if (!user) {
-      return res.status(404).json({ success: false, error: "User not found." });
-    }
-
-    const now = Date.now();
-    if (
-      user.resetCodeExpires &&
-      user.resetCodeExpires > now &&
-      now - (user.resetCodeExpires - 10 * 60 * 1000) < 60 * 1000
-    ) {
-      return res.status(429).json({
-        success: false,
-        error: "Please wait 1 minute before requesting again.",
-      });
-    }
-
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    user.resetCode = code;
-    user.resetCodeExpires = now + 10 * 60 * 1000;
-    await user.save();
-
-    // Send OTP via email
-    const emailResult = await emailService.sendOTP(email, username, code);
-
-    if (emailResult.success) {
-      const response = {
-        success: true,
-        message: "OTP sent to your email address.",
-        expiresIn: 600,
-      };
-
-      // Include preview URL if available (for Ethereal email service)
-      if (emailResult.previewUrl) {
-        response.previewUrl = emailResult.previewUrl;
-        response.message = "OTP sent! Click the link below to view your email.";
-      }
-
-      return res.json(response);
-    } else {
-      // Fallback: show OTP in development mode if email fails
-      if (process.env.NODE_ENV !== "production") {
-        return res.json({
-          success: true,
-          code, // Only in development
-          message:
-            "Email service unavailable. OTP shown below (dev mode only):",
-          expiresIn: 600,
-        });
-      } else {
-        return res.status(500).json({
-          success: false,
-          error: "Failed to send OTP. Please try again later.",
-        });
-      }
-    }
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: "Server error occurred. Please try again later.",
-    });
-  }
-};
-
-module.exports.forgot = async (req, res) => {
-  const { username, email, password, confirm, code } = req.body;
-  const user = await User.findOne({ username, email });
-
-  if (!user) {
-    req.flash("error", "User not found!");
-    return res.redirect("/forgot");
-  }
-
-  if (!user.resetCode || !user.resetCodeExpires || user.resetCode !== code) {
-    req.flash("error", "Invalid or expired OTP!");
-    return res.redirect("/forgot");
-  }
-
-  if (Date.now() > user.resetCodeExpires) {
-    req.flash("error", "OTP expired. Please request a new one!");
-    return res.redirect("/forgot");
-  }
-
-  if (password !== confirm) {
-    req.flash("error", "Passwords do not match!");
-    return res.redirect("/forgot");
-  }
-
-  await user.setPassword(password);
-  user.resetCode = undefined;
-  user.resetCodeExpires = undefined;
-  await user.save();
-
-  req.flash("success", "Password has been reset. Please log in!");
-  req.session.redirectUrl = null;
-  res.redirect("/login");
-};
-
 module.exports.renderChangeEmailForm = (req, res) => {
   res.render("./users/change-email.ejs", { user: req.user });
 };
@@ -226,43 +100,13 @@ module.exports.changeEmail = async (req, res) => {
     return res.redirect("/change-email");
   }
 
-  // Update email and reset verification
-  const crypto = require("crypto");
-  const verificationToken = crypto.randomBytes(32).toString("hex");
-
+  // Update email and auto-verify (no email sending required)
   user.email = newEmail;
-  user.isEmailVerified = false;
-  user.emailVerificationToken = verificationToken;
-  user.emailVerificationExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  user.isEmailVerified = true; // Auto-verify in UI mode
+  console.log(`📧 [UI-MODE] Auto-verified new email: ${newEmail}`);
   await user.save();
 
-  // Send verification email to new address
-  const verificationUrl = `${req.protocol}://${req.get(
-    "host"
-  )}/verify-email/${verificationToken}`;
-  const emailResult = await emailService.sendEmailVerification(
-    newEmail,
-    user.username,
-    verificationUrl
-  );
-
-  if (emailResult.success) {
-    let message =
-      "Email updated! Please check your new email to verify your account.";
-
-    // Add preview URL for production (Ethereal emails)
-    if (emailResult.previewUrl) {
-      message = `Email updated! Click here to view your verification email: ${emailResult.previewUrl}`;
-    }
-
-    req.flash("success", message);
-  } else {
-    req.flash(
-      "success",
-      "Email updated! Verification email will be sent shortly."
-    );
-  }
-
+  req.flash("success", "Email updated and automatically verified!");
   res.redirect("/dashboard");
 };
 
@@ -494,4 +338,120 @@ const renderHostDashboard = async (req, res) => {
     );
     res.redirect("/listings");
   }
+};
+
+// UI-based OTP generation (no email sending)
+module.exports.getCode = async (req, res) => {
+  try {
+    const { username, email } = req.body;
+    const user = await User.findOne({ username, email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found." });
+    }
+
+    const now = Date.now();
+    if (
+      user.resetCodeExpires &&
+      user.resetCodeExpires > now &&
+      now - (user.resetCodeExpires - 10 * 60 * 1000) < 60 * 1000
+    ) {
+      return res.status(429).json({
+        success: false,
+        error: "Please wait 1 minute before requesting again.",
+      });
+    }
+
+    // Generate 6-digit OTP
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetCode = code;
+    user.resetCodeExpires = now + 10 * 60 * 1000; // 10 minutes
+    await user.save();
+
+    console.log(`📧 [UI-MODE] OTP for ${username} (${email}): ${code}`);
+
+    // Return OTP directly in response (no email sent)
+    return res.json({
+      success: true,
+      message: `Your reset code is: ${code}`,
+      code: code, // Show code directly
+      showInUI: true,
+      expiresIn: 600,
+      uiMessage: `🔐 Your Password Reset Code\n\n${code}\n\nThis code expires in 10 minutes.\n\nNote: In production, this would be sent to your email.`,
+    });
+  } catch (error) {
+    console.error("Error generating OTP:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Server error occurred. Please try again later.",
+    });
+  }
+};
+
+// UI-based email verification (auto-verify)
+module.exports.sendVerification = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user.isEmailVerified) {
+      return res.json({
+        success: false,
+        error: "Email already verified",
+      });
+    }
+
+    // Auto-verify the user in UI mode
+    user.isEmailVerified = true;
+    await user.save();
+
+    console.log(`📧 [UI-MODE] Auto-verified email for user: ${user.email}`);
+
+    return res.json({
+      success: true,
+      message: "Email automatically verified!",
+      autoVerified: true,
+      showInUI: true,
+    });
+  } catch (error) {
+    console.error("Error in sendVerification:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Server error occurred. Please try again later.",
+    });
+  }
+};
+
+// Password reset with code verification
+module.exports.forgot = async (req, res) => {
+  const { username, email, password, confirm, code } = req.body;
+  const user = await User.findOne({ username, email });
+
+  if (!user) {
+    req.flash("error", "User not found!");
+    return res.redirect("/forgot");
+  }
+
+  if (!user.resetCode || !user.resetCodeExpires || user.resetCode !== code) {
+    req.flash("error", "Invalid or expired OTP!");
+    return res.redirect("/forgot");
+  }
+
+  if (Date.now() > user.resetCodeExpires) {
+    req.flash("error", "OTP expired. Please request a new one!");
+    return res.redirect("/forgot");
+  }
+
+  if (password !== confirm) {
+    req.flash("error", "Passwords do not match!");
+    return res.redirect("/forgot");
+  }
+
+  await user.setPassword(password);
+  user.resetCode = undefined;
+  user.resetCodeExpires = undefined;
+  await user.save();
+
+  req.flash("success", "Password has been reset. Please log in!");
+  req.session.redirectUrl = null;
+  res.redirect("/login");
 };

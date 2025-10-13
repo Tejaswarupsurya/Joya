@@ -1,28 +1,12 @@
 //mongodb Section
 const User = require("../models/user.js");
-const emailService = require("../utils/emailService.js");
 
 module.exports.renderApplyForm = async (req, res) => {
-  // Simple check: user must be verified to access host form
-  if (!req.user.isEmailVerified) {
-    req.flash(
-      "error",
-      "Please verify your email address first. Check your dashboard to resend verification email."
-    );
-    return res.redirect("/dashboard");
-  }
-
   res.render("hosts/apply.ejs");
 };
 
 module.exports.submitApplication = async (req, res) => {
   try {
-    // Simple check: user must be verified to submit host application
-    if (!req.user.isEmailVerified) {
-      req.flash("error", "Please verify your email address first.");
-      return res.redirect("/dashboard");
-    }
-
     const { fullName, phone, aadhaar } = req.body;
     const userId = req.user._id;
 

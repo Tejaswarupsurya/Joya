@@ -24,33 +24,6 @@
 
   <!-- Account Settings Quick Access -->
   <div class="mb-4">
-    <!-- Email Verification Status -->
-    <% if (!user.isEmailVerified) { %>
-    <div class="alert alert-warning d-flex align-items-center mb-4">
-      <i class="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
-      <div class="flex-grow-1">
-        <h6 class="alert-heading mb-1">Email Verification Required</h6>
-        <p class="mb-0">
-          Please verify your email to access all features including password
-          recovery and booking confirmations.
-        </p>
-      </div>
-      <button class="btn btn-warning btn-sm" onclick="resendVerification()">
-        <i class="bi bi-envelope me-1"></i>Resend Email
-      </button>
-    </div>
-    <% } else { %>
-    <div class="alert alert-success d-flex align-items-center mb-4">
-      <i class="bi bi-check-circle-fill me-3 fs-4"></i>
-      <div>
-        <h6 class="alert-heading mb-1">Email Verified</h6>
-        <p class="mb-0">
-          Your account is fully verified and ready to use all features.
-        </p>
-      </div>
-    </div>
-    <% } %>
-
     <!-- Account Settings Panel -->
     <div class="card shadow-sm border-0">
       <div class="card-header bg-white border-bottom">
@@ -70,11 +43,6 @@
               <div>
                 <h6 class="mb-1">Current Email</h6>
                 <p class="mb-0 text-muted small"><%= user.email %></p>
-                <% if (user.isEmailVerified) { %>
-                <span class="badge bg-success small">Verified</span>
-                <% } else { %>
-                <span class="badge bg-warning small">Unverified</span>
-                <% } %>
               </div>
             </div>
           </div>
@@ -402,7 +370,7 @@
               href="/listings/<%= booking.listing._id %>/bookings/<%= booking._id %>"
               class="btn w-100 <%= isExpiringSoon ? 'btn-warning' : 'btn-pending-action' %>"
             >
-              <i class="bi bi-hand-thumbs-up me-2"></i><%= isExpiringSoon ?'Waiting for confirmation (Urgent!)' : 'Waiting for yourconfirmation' %>
+              <i class="bi bi-hand-thumbs-up me-2"></i><%= isExpiringSoon?'Waiting for confirmation (Urgent!)' : 'Waiting foryourconfirmation' %>
             </a>
             <% } %>
           </div>
@@ -470,9 +438,7 @@
                 <div>
                   <small class="text-muted d-block">Guests</small>
                   <strong
-                    ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' :
-                    'Guests' %></strong
-                  >
+                    ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' : 'Guests' %></strong>
                 </div>
               </div>
             </div>
@@ -582,8 +548,7 @@
                   <div>
                     <small class="text-muted d-block">Guests</small>
                     <strong class="text-muted"
-                      ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' : 'Guests' %></strong
-                    >
+                      ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' : 'Guests' %></strong>
                   </div>
                 </div>
               </div>
@@ -612,53 +577,3 @@
 
 <script src="/js/user-dashboard.js"></script>
 <script src="/js/dashboard-wishlist.js"></script>
-
-<script>
-  // Resend email verification (using Promise then/catch instead of async/await)
-  function resendVerification() {
-    const button = event.target;
-    const originalText = button.textContent;
-
-    button.textContent = "Sending...";
-    button.disabled = true;
-
-    fetch("/send-verification", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          let message = "✅ " + result.message;
-
-          // Show preview link for Ethereal email service
-          if (result.previewUrl) {
-            message +=
-              "\n\n� View your email: Click the link below to access your verification email:\n" +
-              result.previewUrl;
-
-            // Show alert with option to open email preview
-            if (
-              confirm(message + "\n\nWould you like to open your email now?")
-            ) {
-              window.open(result.previewUrl, "_blank");
-            }
-          } else {
-            alert(message + "\nPlease check your inbox and spam folder.");
-          }
-        } else {
-          alert("❌ " + (result.error || "Failed to send verification email"));
-        }
-      })
-      .catch((error) => {
-        console.error("Error sending verification:", error);
-        alert("❌ Failed to send verification email. Please try again.");
-      })
-      .finally(() => {
-        button.textContent = originalText;
-        button.disabled = false;
-      });
-  }
-</script>

@@ -1,6 +1,5 @@
 ﻿const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
-const emailService = require("../utils/emailService.js");
 
 module.exports.renderNewForm = async (req, res) => {
   const listing = await Listing.findById(req.params.id);
