@@ -1,0 +1,29 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t joya-app:latest .
+
+      - name: Stop old container (if exists)
+        run: |
+          docker stop joya-app || true
+          docker rm joya-app || true
+
+      - name: Run new container
+        run: |
+          docker run -d \
+            --name joya-app \
+            -p 127.0.0.1:3000:3000 \
+            --env-file /home/ubuntu/.env \
+            joya-app:latest
