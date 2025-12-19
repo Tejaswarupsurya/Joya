@@ -32,6 +32,7 @@ app.use(compression());
 
 //utils
 const ExpressError = require("./utils/ExpressError.js");
+const { scheduleCleanup } = require("./utils/bookingCleanup.js");
 
 //passport Section
 const passport = require("passport");
@@ -52,9 +53,6 @@ const searchRouter = require("./routes/search");
 //mongoAtlas & mongodb Section
 const dbUrl = process.env.ATLASDB_URL;
 const mongoose = require("mongoose");
-
-// Import booking cleanup utility
-const { scheduleCleanup } = require("./utils/bookingCleanup.js");
 
 main()
   .then(() => {

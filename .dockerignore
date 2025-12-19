@@ -1,0 +1,20 @@
+# Ignore dependencies, as they are installed within the Dockerfile
+
+node_modules
+
+# Ignore logs and temporary files
+
+npm-debug.log
+logs/
+coverage/
+
+# Ignore environment files - these will be injected securely at runtime
+
+.env
+
+# Ignore Git and project documentation
+
+.git
+.gitignore
+README.md
+LICENSE
