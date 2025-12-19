@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.79% </span>
+                <span class="strong">13.63% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>4/29</span>
+                <span class='fraction'>3/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">13.79% </span>
+                <span class="strong">13.63% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>4/29</span>
+                <span class='fraction'>3/22</span>
             </div>
         
             
@@ -121,47 +121,15 @@
 <a name='L56'></a><a href='#L56'>56</a>
 <a name='L57'></a><a href='#L57'>57</a>
 <a name='L58'></a><a href='#L58'>58</a>
-<a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a>
-<a name='L61'></a><a href='#L61'>61</a>
-<a name='L62'></a><a href='#L62'>62</a>
-<a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a>
-<a name='L65'></a><a href='#L65'>65</a>
-<a name='L66'></a><a href='#L66'>66</a>
-<a name='L67'></a><a href='#L67'>67</a>
-<a name='L68'></a><a href='#L68'>68</a>
-<a name='L69'></a><a href='#L69'>69</a>
-<a name='L70'></a><a href='#L70'>70</a>
-<a name='L71'></a><a href='#L71'>71</a>
-<a name='L72'></a><a href='#L72'>72</a>
-<a name='L73'></a><a href='#L73'>73</a>
-<a name='L74'></a><a href='#L74'>74</a>
-<a name='L75'></a><a href='#L75'>75</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<a name='L59'></a><a href='#L59'>59</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -213,29 +181,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">//mongodb Section
 const User = require("../models/user.js");
-const emailService = require("../utils/emailService.js");
 &nbsp;
 module.exports.renderApplyForm = <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
-  // Simple check: user must be verified to access host form
-<span class="cstat-no" title="statement not covered" >  if (!req.user.isEmailVerified) {</span>
-<span class="cstat-no" title="statement not covered" >    req.flash(</span>
-      "error",
-      "Please verify your email address first. Check your dashboard to resend verification email."
-    );
-<span class="cstat-no" title="statement not covered" >    return res.redirect("/dashboard");</span>
-  }
-&nbsp;
 <span class="cstat-no" title="statement not covered" >  res.render("hosts/apply.ejs");</span>
 };
 &nbsp;
 module.exports.submitApplication = <span class="fstat-no" title="function not covered" >as</span>ync (req, res) =&gt; {
 <span class="cstat-no" title="statement not covered" >  try {</span>
-    // Simple check: user must be verified to submit host application
-<span class="cstat-no" title="statement not covered" >    if (!req.user.isEmailVerified) {</span>
-<span class="cstat-no" title="statement not covered" >      req.flash("error", "Please verify your email address first.");</span>
-<span class="cstat-no" title="statement not covered" >      return res.redirect("/dashboard");</span>
-    }
-&nbsp;
     const { fullName, phone, aadhaar } = <span class="cstat-no" title="statement not covered" >req.body;</span>
     const userId = <span class="cstat-no" title="statement not covered" >req.user._id;</span>
 &nbsp;
@@ -292,7 +244,7 @@ module.exports.submitApplication = <span class="fstat-no" title="function not co
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-10-12T20:34:53.857Z
+                at 2025-12-19T11:56:43.249Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

@@ -50,38 +50,38 @@ const adminRouter = require("./routes/admin");
 const wishlistRouter = require("./routes/wishlist");
 const searchRouter = require("./routes/search");
 
-//mongoAtlas & mongodb Section
-const dbUrl = process.env.ATLASDB_URL;
+// mongoAtlas & mongodb Section
+const isTestEnv = process.env.NODE_ENV === "test";
+const dbUrl =
+  process.env.ATLASDB_URL ||
+  process.env.MONGODB_URL ||
+  (process.env.NODE_ENV === "production"
+    ? null
+    : "mongodb://127.0.0.1:27017/joya");
 const mongoose = require("mongoose");
 
-main()
-  .then(() => {
-    console.log("Database connected successfully");
-    // Start the booking expiration cleanup scheduler
-    scheduleCleanup();
-  })
-  .catch((err) => {
-    console.log("Database connection failed", err);
-  });
 async function main() {
+  if (!dbUrl) {
+    throw new Error("Missing database URL. Set ATLASDB_URL (or MONGODB_URL).");
+  }
   await mongoose.connect(dbUrl);
 }
 
-//Mongo-Connect,Express-Session & Flash
-const store = MongoStore.create({
-  mongoUrl: dbUrl,
-  crypto: {
-    secret: process.env.SECRET,
-  },
-  touchAfter: 24 * 3600,
-});
-store.on("error", () => {
-  console.log("ERROR in MONGO SESSION STORE", err);
-});
+if (!isTestEnv) {
+  main()
+    .then(() => {
+      console.log("Database connected successfully");
+      // Start the booking expiration cleanup scheduler
+      scheduleCleanup();
+    })
+    .catch((err) => {
+      console.log("Database connection failed", err);
+    });
+}
 
+//Mongo-Connect,Express-Session & Flash
 const sessionOptions = {
-  store,
-  secret: process.env.SECRET,
+  secret: process.env.SECRET || "dev-secret",
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -90,6 +90,23 @@ const sessionOptions = {
     httpOnly: true,
   },
 };
+
+// Use connect-mongo only when we have a DB URL and we're not in tests.
+if (!isTestEnv && dbUrl) {
+  const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    crypto: {
+      secret: process.env.SECRET || "dev-secret",
+    },
+    touchAfter: 24 * 3600,
+  });
+
+  store.on("error", (err) => {
+    console.log("ERROR in MONGO SESSION STORE", err);
+  });
+
+  sessionOptions.store = store;
+}
 app.use(session(sessionOptions));
 app.use(flash());
 

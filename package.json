@@ -6,7 +6,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest tests/basic.test.js --runInBand",
+    "test:all": "jest",
     "test:watch": "jest --watch",
     "start": "node app.js",
     "dev": "nodemon app.js"
