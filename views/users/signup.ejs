@@ -2,7 +2,98 @@
 <div class="container row mt-3">
   <div class="col-6 offset-3">
     <h3>SignUp on Joya</h3>
-    <form method="POST" action="/signup" novalidate class="needs-validation">
+
+    <!-- Step 1: Email Verification -->
+    <div id="emailStep">
+      <p class="text-muted mb-3">First, let's verify your email address</p>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email Address</label>
+        <input
+          class="form-control"
+          id="email"
+          type="email"
+          placeholder="your@email.com"
+          required
+        />
+        <div class="invalid-feedback">Enter a valid email</div>
+      </div>
+      <button
+        type="button"
+        class="btn btn-color w-100"
+        id="sendOtpBtn"
+        onclick="sendOTP()"
+      >
+        <i class="bi bi-envelope me-2"></i>Send Verification Code
+      </button>
+      <div class="text-center mt-3">
+        <small class="text-muted">
+          Already have an account?
+          <a href="/login" class="text-primary">Log in here</a>
+        </small>
+      </div>
+    </div>
+
+    <!-- Step 2: OTP Verification -->
+    <div id="otpStep" style="display: none">
+      <div class="alert alert-info">
+        <i class="bi bi-envelope-check me-2"></i>
+        We've sent a 6-digit code to <strong id="displayEmail"></strong>
+      </div>
+      <div class="mb-3">
+        <label for="otp" class="form-label">Enter Verification Code</label>
+        <input
+          type="text"
+          class="form-control text-center"
+          id="otp"
+          placeholder="000000"
+          maxlength="6"
+          pattern="[0-9]{6}"
+          style="font-size: 24px; letter-spacing: 8px"
+          autocomplete="off"
+        />
+      </div>
+      <button
+        type="button"
+        class="btn btn-color w-100 mb-2"
+        id="verifyOtpBtn"
+        onclick="verifyOTP()"
+      >
+        <i class="bi bi-check-circle me-2"></i>Verify Code
+      </button>
+      <button
+        type="button"
+        class="btn btn-link w-100"
+        id="resendBtn"
+        onclick="resendOTP()"
+      >
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        <span id="resendText">Resend Code</span>
+      </button>
+      <p
+        class="text-muted small text-center"
+        id="timerText"
+        style="display: none"
+      >
+        Resend available in <span id="countdown">60</span>s
+      </p>
+    </div>
+
+    <!-- Step 3: Complete Registration -->
+    <form
+      method="POST"
+      action="/signup"
+      novalidate
+      class="needs-validation"
+      id="signupForm"
+      style="display: none"
+    >
+      <input type="hidden" name="email" id="verifiedEmail" />
+
+      <div class="alert alert-success">
+        <i class="bi bi-check-circle me-2"></i>
+        Email verified! Complete your registration below.
+      </div>
+
       <div class="mb-3">
         <label for="username" class="form-label">Username</label>
         <input
@@ -14,17 +105,7 @@
         />
         <div class="valid-feedback">Looks Good!</div>
       </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input
-          name="email"
-          class="form-control"
-          id="email"
-          type="email"
-          required
-        />
-        <div class="invalid-feedback">Enter a valid Email</div>
-      </div>
+
       <div class="mb-3 position-relative">
         <label for="password" class="form-label">Password</label>
         <input
@@ -36,7 +117,8 @@
         />
         <i class="bi bi-eye-slash eye-toggle position-absolute end-0 me-3"></i>
       </div>
-      <div class="mb-1">
+
+      <div class="mb-3">
         <label for="confirm" class="form-label">Confirm Password</label>
         <input
           name="confirm"
@@ -49,15 +131,6 @@
         <div class="invalid-feedback">Passwords not matched</div>
       </div>
 
-      <div
-        class="d-flex flex-row-reverse justify-content-between align-items-center mb-3"
-      >
-        <a href="/login" class="text-decoration-none small text-muted"
-          >Already have an account? Log in here</a
-        >
-      </div>
-
-      <!-- Terms and Privacy Agreement -->
       <div class="form-check mb-3">
         <input
           class="form-check-input"
@@ -83,26 +156,20 @@
       <div
         class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2"
       >
-        <button class="btn btn-color" id="submitBtn">SignUp</button>
-        <a href="/listings" class="text-muted go-back"
-          ><i class="bi bi-caret-left-fill"></i>Go Back</a
-        >
+        <button class="btn btn-color" id="submitBtn">Complete SignUp</button>
+        <a href="/listings" class="text-muted go-back">
+          <i class="bi bi-caret-left-fill"></i>Go Back
+        </a>
       </div>
 
-      <!-- Help Links -->
       <div class="text-center mt-3">
         <small class="text-muted">
           Need help? Visit our
           <a href="/info/help-center" target="_blank" class="text-primary"
             >Help Center</a
           >
-          or
-          <a href="/info/contact" target="_blank" class="text-primary"
-            >Contact Support</a
-          >
         </small>
       </div>
-
       <br /><br />
     </form>
   </div>
@@ -114,11 +181,162 @@
     setupEyeToggle,
   } from "/js/passwordUtils.js";
 
-  setupPasswordValidation({
-    passwordId: "password",
-    confirmId: "confirm",
-    submitId: "submitBtn",
+  let cooldownTimer = null;
+  const COOLDOWN_SECONDS = 60;
+
+  // Auto-focus OTP input when step shows
+  document.getElementById("otp")?.addEventListener("input", function (e) {
+    this.value = this.value.replace(/[^0-9]/g, "");
   });
 
-  setupEyeToggle();
+  window.sendOTP = async function () {
+    const emailInput = document.getElementById("email");
+    const email = emailInput.value.trim();
+    const sendBtn = document.getElementById("sendOtpBtn");
+
+    if (!email || !emailInput.checkValidity()) {
+      emailInput.classList.add("is-invalid");
+      return;
+    }
+
+    sendBtn.disabled = true;
+    sendBtn.innerHTML =
+      '<span class="spinner-border spinner-border-sm me-2"></span>Sending...';
+
+    try {
+      const response = await fetch("/send-signup-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        document.getElementById("emailStep").style.display = "none";
+        document.getElementById("otpStep").style.display = "block";
+        document.getElementById("displayEmail").textContent = email;
+        document.getElementById("otp").focus();
+        startCooldown(COOLDOWN_SECONDS);
+      } else {
+        alert(data.message || "Failed to send code");
+        sendBtn.disabled = false;
+        sendBtn.innerHTML =
+          '<i class="bi bi-envelope me-2"></i>Send Verification Code';
+      }
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+      sendBtn.disabled = false;
+      sendBtn.innerHTML =
+        '<i class="bi bi-envelope me-2"></i>Send Verification Code';
+    }
+  };
+
+  window.verifyOTP = async function () {
+    const email = document.getElementById("email").value;
+    const otp = document.getElementById("otp").value;
+    const verifyBtn = document.getElementById("verifyOtpBtn");
+
+    if (otp.length !== 6) {
+      alert("Please enter a valid 6-digit code");
+      return;
+    }
+
+    verifyBtn.disabled = true;
+    verifyBtn.innerHTML =
+      '<span class="spinner-border spinner-border-sm me-2"></span>Verifying...';
+
+    try {
+      const response = await fetch("/verify-signup-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        document.getElementById("otpStep").style.display = "none";
+        document.getElementById("signupForm").style.display = "block";
+        document.getElementById("verifiedEmail").value = email;
+        document.getElementById("username").focus();
+
+        setupPasswordValidation({
+          passwordId: "password",
+          confirmId: "confirm",
+          submitId: "submitBtn",
+        });
+        setupEyeToggle();
+      } else {
+        alert(data.message || "Invalid code");
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML =
+          '<i class="bi bi-check-circle me-2"></i>Verify Code';
+      }
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+      verifyBtn.disabled = false;
+      verifyBtn.innerHTML =
+        '<i class="bi bi-check-circle me-2"></i>Verify Code';
+    }
+  };
+
+  window.resendOTP = async function () {
+    const email = document.getElementById("email").value;
+    const resendBtn = document.getElementById("resendBtn");
+    const resendText = document.getElementById("resendText");
+
+    resendBtn.disabled = true;
+    resendText.innerHTML =
+      '<span class="spinner-border spinner-border-sm me-1"></span>Sending...';
+
+    try {
+      const response = await fetch("/send-signup-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        resendText.textContent = "✓ Code Sent!";
+        setTimeout(() => (resendText.textContent = "Resend Code"), 2000);
+        startCooldown(COOLDOWN_SECONDS);
+      } else {
+        alert(data.message || "Failed to resend code");
+        resendBtn.disabled = false;
+        resendText.textContent = "Resend Code";
+      }
+    } catch (error) {
+      alert("Something went wrong. Please try again.");
+      resendBtn.disabled = false;
+      resendText.textContent = "Resend Code";
+    }
+  };
+
+  function startCooldown(seconds) {
+    const resendBtn = document.getElementById("resendBtn");
+    const timerText = document.getElementById("timerText");
+    const countdown = document.getElementById("countdown");
+
+    resendBtn.disabled = true;
+    timerText.style.display = "block";
+
+    let timeLeft = seconds;
+    countdown.textContent = timeLeft;
+
+    if (cooldownTimer) clearInterval(cooldownTimer);
+
+    cooldownTimer = setInterval(() => {
+      timeLeft--;
+      countdown.textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(cooldownTimer);
+        resendBtn.disabled = false;
+        timerText.style.display = "none";
+      }
+    }, 1000);
+  }
 </script>

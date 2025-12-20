@@ -41,7 +41,10 @@ const userSchema = new Schema(
     notifications: [{ type: Schema.Types.ObjectId, ref: "Notification" }],
     resetCode: String,
     resetCodeExpires: Date,
-    isEmailVerified: { type: Boolean, default: true }, // Auto-verify in UI mode
+    isEmailVerified: { type: Boolean, default: false }, // Require email verification
+    emailVerificationToken: String,
+    emailVerificationExpires: Date,
+    otpLastSentAt: Date, // Track last OTP send time for rate limiting
   },
   { timestamps: true }
 );
