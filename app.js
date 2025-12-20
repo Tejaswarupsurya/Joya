@@ -21,6 +21,12 @@ app.engine("ejs", ejsMate);
 app.set("views", path.join(__dirname, "/views"));
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(methodOverride("_method"));
+
+// IMPORTANT: Stripe webhook MUST come BEFORE express.json() middleware
+// Webhook needs raw body for signature verification
+app.use("/payments/webhook", express.raw({ type: "application/json" }));
+
+// JSON and URL encoding for all other routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -49,6 +55,7 @@ const hostRouter = require("./routes/host");
 const adminRouter = require("./routes/admin");
 const wishlistRouter = require("./routes/wishlist");
 const searchRouter = require("./routes/search");
+const paymentRouter = require("./routes/payment");
 
 // mongoAtlas & mongodb Section
 const isTestEnv = process.env.NODE_ENV === "test";
@@ -137,6 +144,7 @@ app.use("/listings/:id/reviews", reviewRouter);
 app.use("/listings/:id/bookings", bookingRouter);
 app.use("/wishlist", wishlistRouter);
 app.use("/info/:page", infoRouter);
+app.use("/payments", paymentRouter);
 app.use("/", searchRouter);
 app.use("/", adminRouter);
 app.use("/", hostRouter);
@@ -160,6 +168,3 @@ if (process.env.NODE_ENV !== "test") {
     console.log(`Server is running on port ${port}`);
   });
 }
-
-
-

@@ -1,0 +1,100 @@
+<% layout("./layouts/boilerplate")-%>
+
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <!-- Cancel Icon -->
+          <div class="text-center mb-4">
+            <i
+              class="bi bi-x-circle-fill text-warning"
+              style="font-size: 4rem"
+            ></i>
+          </div>
+
+          <!-- Cancel Message -->
+          <h2 class="text-center mb-2">Payment Cancelled</h2>
+          <p class="text-center text-muted mb-4">
+            Your payment was not completed and the booking has been cancelled.
+          </p>
+
+          <!-- Booking Details Card -->
+          <% if (booking) { %>
+          <div class="bg-light rounded p-4 mb-4">
+            <h5 class="mb-3">
+              <i class="bi bi-info-circle me-2"></i>Cancelled Booking
+            </h5>
+
+            <div class="mb-2 d-flex justify-content-between">
+              <span class="text-muted">Property:</span>
+              <strong class="text-end"><%= booking.listing.title %></strong>
+            </div>
+
+            <div class="mb-2 d-flex justify-content-between">
+              <span class="text-muted">Check-in:</span>
+              <strong
+                ><%= new Date(booking.checkIn).toLocaleDateString('en-IN')
+                %></strong
+              >
+            </div>
+
+            <div class="mb-2 d-flex justify-content-between">
+              <span class="text-muted">Check-out:</span>
+              <strong
+                ><%= new Date(booking.checkOut).toLocaleDateString('en-IN')
+                %></strong
+              >
+            </div>
+
+            <div class="mb-2 d-flex justify-content-between">
+              <span class="text-muted">Guests:</span>
+              <strong><%= booking.guests %></strong>
+            </div>
+
+            <hr class="my-3" />
+
+            <div class="d-flex justify-content-between">
+              <span class="text-muted">Amount:</span>
+              <span class="text-decoration-line-through text-muted"
+                >₹<%= booking.totalPrice.toLocaleString('en-IN') %></span
+              >
+            </div>
+          </div>
+          <% } %>
+
+          <!-- What's Next -->
+          <div class="bg-light rounded p-4 mb-4">
+            <h6 class="mb-3">
+              <i class="bi bi-lightbulb me-2"></i>What's next?
+            </h6>
+            <ul class="mb-0 small">
+              <li>No charges were made to your card</li>
+              <li>You can try booking again anytime</li>
+              <li>The dates you selected may still be available</li>
+            </ul>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
+            <a
+              href="/listings/<%= booking ? booking.listing._id : '' %>"
+              class="btn btn-color"
+            >
+              <i class="bi bi-arrow-clockwise me-2"></i>Try Again
+            </a>
+            <a href="/listings" class="btn btn-outline-secondary">
+              <i class="bi bi-search me-2"></i>Browse Listings
+            </a>
+          </div>
+
+          <!-- Help Link -->
+          <p class="text-center text-muted small mb-0">
+            Need help?
+            <a href="/info/help-center" class="text-primary">Contact Support</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

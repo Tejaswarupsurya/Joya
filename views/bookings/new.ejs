@@ -14,10 +14,11 @@
 
     <div class="card booking-form mb-3">
       <form
-        action="/listings/<%= listing._id %>/bookings"
-        method="POST"
+        id="bookingForm"
         novalidate
         class="needs-validation"
+        data-listing-id="<%= listing._id %>"
+        data-listing-price="<%= listing.price %>"
       >
         <!-- Date Range -->
         <div class="mb-3">
@@ -59,10 +60,22 @@
           </div>
         </div>
 
+        <!-- Price Summary -->
+        <div class="alert alert-info" id="priceSummary" style="display: none">
+          <h6 class="alert-heading">Booking Summary</h6>
+          <div class="d-flex justify-content-between">
+            <span
+              >₹<%= listing.price %> ×
+              <span id="nightsCount">0</span> nights</span
+            >
+            <strong>₹<span id="totalPrice">0</span></strong>
+          </div>
+        </div>
+
         <!-- Buttons -->
         <div class="d-flex justify-content-between align-items-center mt-4">
-          <button type="submit" class="btn btn-color">
-            <i class="bi bi-calendar-check me-1"></i>Confirm Booking
+          <button type="submit" class="btn btn-color" id="proceedToPayment">
+            <i class="bi bi-credit-card me-1"></i>Proceed to Payment
           </button>
           <a href="/listings/<%= listing._id %>" class="text-muted go-back">
             <i class="bi bi-caret-left-fill"></i> Go Back
@@ -76,7 +89,8 @@
 <!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-  // Pass booked dates to JavaScript
+  // Pass booked dates to JavaScript for date picker
   const bookedRanges = <%- JSON.stringify(bookedDates) %>;
 </script>
 <script src="/js/booking.js"></script>
+<script src="/js/payment.js"></script>

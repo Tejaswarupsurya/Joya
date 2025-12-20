@@ -18,15 +18,17 @@ const bookingSchema = new Schema({
   totalPrice: { type: Number, required: true },
   status: {
     type: String,
-    enum: ["pending", "confirmed", "cancelled", "expired"],
-    default: "pending",
+    enum: ["pending_payment", "confirmed", "cancelled", "expired"],
+    default: "pending_payment",
   },
+  stripeSessionId: { type: String },
+  stripePaymentIntentId: { type: String },
   createdAt: { type: Date, default: Date.now },
   expiresAt: {
     type: Date,
     default: function () {
-      // Set expiration to 24 hours from creation if status is pending
-      return this.status === "pending"
+      // Set expiration to 24 hours from creation if status is pending_payment
+      return this.status === "pending_payment"
         ? new Date(Date.now() + 24 * 60 * 60 * 1000)
         : null;
     },
@@ -35,7 +37,7 @@ const bookingSchema = new Schema({
 
 // Middleware to set expiration date when creating pending bookings
 bookingSchema.pre("save", function (next) {
-  if (this.isNew && this.status === "pending") {
+  if (this.isNew && this.status === "pending_payment") {
     this.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
   } else if (this.status === "confirmed" || this.status === "cancelled") {
     this.expiresAt = null; // Remove expiration for confirmed/cancelled bookings
@@ -46,7 +48,9 @@ bookingSchema.pre("save", function (next) {
 // Method to check if booking is expired
 bookingSchema.methods.isExpired = function () {
   return (
-    this.status === "pending" && this.expiresAt && new Date() > this.expiresAt
+    this.status === "pending_payment" &&
+    this.expiresAt &&
+    new Date() > this.expiresAt
   );
 };
 
@@ -55,7 +59,7 @@ bookingSchema.statics.expireOldBookings = async function () {
   const now = new Date();
   const result = await this.updateMany(
     {
-      status: "pending",
+      status: "pending_payment",
       expiresAt: { $lt: now },
     },
     {

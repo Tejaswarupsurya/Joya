@@ -1,0 +1,93 @@
+<% layout("./layouts/boilerplate")-%>
+
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4 p-md-5">
+          <!-- Success Icon -->
+          <div class="text-center mb-4">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+          </div>
+
+          <!-- Success Message -->
+          <h2 class="text-center mb-2">Payment Successful!</h2>
+          <p class="text-center text-muted mb-4">
+            Your booking has been confirmed. You will receive a confirmation email shortly.
+          </p>
+
+          <!-- Booking Details Card -->
+          <div class="bg-light rounded p-4 mb-4">
+            <h5 class="mb-3">
+              <i class="bi bi-house-door me-2"></i>Booking Details
+            </h5>
+
+            <div class="mb-2 d-flex justify-content-between">
+              <span class="text-muted">Property:</span>
+              <strong class="text-end"><%= booking.listing.title %></strong>
+            </div>
+
+            <div class="mb-2 d-flex justify-content-between">
+              <span class="text-muted">Check-in:</span>
+              <strong><%= new Date(booking.checkIn).toLocaleDateString('en-IN') %></strong>
+            </div>
+
+            <div class="mb-2 d-flex justify-content-between">
+              <span class="text-muted">Check-out:</span>
+              <strong><%= new Date(booking.checkOut).toLocaleDateString('en-IN') %></strong>
+            </div>
+
+            <div class="mb-3 d-flex justify-content-between">
+              <span class="text-muted">Guests:</span>
+              <strong><%= booking.guests %></strong>
+            </div>
+
+            <hr class="my-3">
+
+            <div class="mb-2 d-flex justify-content-between">
+              <span class="text-muted">Total Paid:</span>
+              <strong class="text-success fs-5">₹<%= booking.totalPrice.toLocaleString('en-IN') %></strong>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <span class="text-muted small">Booking ID:</span>
+              <span class="text-muted small"><%= booking._id %></span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
+            <a href="/dashboard" class="btn btn-color">
+              <i class="bi bi-speedometer2 me-2"></i>View Dashboard
+            </a>
+            <a href="/listings" class="btn btn-outline-secondary">
+              <i class="bi bi-search me-2"></i>Browse Listings
+            </a>
+          </div>
+
+          <!-- Payment Info -->
+          <p class="text-center text-muted small mb-0">
+            <i class="bi bi-shield-check me-1"></i>
+            Payment processed securely by Stripe
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<style>
+  .card {
+    border-radius: 15px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #5568d3 0%, #6a4293 100%);
+  }
+</style>

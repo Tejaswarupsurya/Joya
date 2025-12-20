@@ -17,13 +17,8 @@ const wrapAsync = require("../utils/wrapAsync");
 // GET - Show booking form
 router.get("/new", isLoggedIn, wrapAsync(bookingController.renderNewForm));
 
-// POST - Create new booking (with validation)
-router.post(
-  "/",
-  isLoggedIn,
-  validateBooking,
-  wrapAsync(bookingController.createBooking)
-);
+// NOTE: POST booking creation removed - all bookings go through payment flow
+// See routes/payment.js -> POST /payments/create-checkout-session
 
 // GET - Show specific booking (with ownership check)
 router.get(
@@ -32,7 +27,7 @@ router.get(
   checkBookingOwnership,
   wrapAsync(bookingController.showBooking)
 );
-// PUT - Confirm booking 
+// PUT - Confirm booking
 router.put(
   "/:bookingId/confirm",
   isLoggedIn,
