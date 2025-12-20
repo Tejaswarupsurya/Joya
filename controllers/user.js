@@ -2,162 +2,41 @@
 const User = require("../models/user.js");
 const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
-const { sendOTPEmail, sendWelcomeEmail } = require("../utils/emailService.js");
-const {
-  generateOTP,
-  generateOTPToken,
-  verifyOTPToken,
-  canResendOTP,
-  getRemainingCooldown,
-} = require("../utils/jwtHelper.js");
 
 module.exports.renderSignupForm = (req, res) => {
   res.render("./users/signup.ejs");
 };
 
-module.exports.sendSignupOTP = async (req, res) => {
-  const { email } = req.body;
-
-  try {
-    // Check if email already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Email already registered. Please log in.",
-        });
-    }
-
-    // Check cooldown if exists in session
-    if (req.session.otpData && req.session.otpData.email === email) {
-      if (!canResendOTP(req.session.otpData.lastSentAt)) {
-        const remaining = getRemainingCooldown(req.session.otpData.lastSentAt);
-        return res.status(429).json({
-          success: false,
-          message: `Please wait ${remaining} seconds before requesting a new code`,
-          remainingSeconds: remaining,
-        });
-      }
-    }
-
-    // Generate OTP and token
-    const otp = generateOTP();
-    const otpToken = generateOTPToken(email, otp);
-
-    // Store in session (not in database yet)
-    req.session.otpData = {
-      email,
-      token: otpToken,
-      expires: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
-      lastSentAt: new Date(),
-      verified: false,
-    };
-
-    // Send OTP email
-    await sendOTPEmail(email, otp, "User");
-    console.log(`📧 Signup OTP sent to ${email}`);
-
-    res.json({ success: true, message: "Verification code sent successfully" });
-  } catch (error) {
-    console.error("Send signup OTP error:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Failed to send verification code" });
-  }
-};
-
-module.exports.verifySignupOTP = async (req, res) => {
-  const { email, otp } = req.body;
-
-  try {
-    // Check if OTP data exists in session
-    if (!req.session.otpData || req.session.otpData.email !== email) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "No verification pending for this email",
-        });
-    }
-
-    // Check if expired
-    if (Date.now() > req.session.otpData.expires) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Verification code expired. Please request a new one.",
-        });
-    }
-
-    // Verify OTP
-    const payload = verifyOTPToken(req.session.otpData.token);
-    if (!payload || payload.email !== email || payload.otp !== otp) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid verification code" });
-    }
-
-    // Mark as verified in session
-    req.session.otpData.verified = true;
-    console.log(`✅ Email verified in session: ${email}`);
-
-    res.json({ success: true, message: "Email verified successfully" });
-  } catch (error) {
-    console.error("Verify signup OTP error:", error);
-    res.status(500).json({ success: false, message: "Verification failed" });
-  }
-};
-
 module.exports.signup = async (req, res) => {
   let { username, email, password, confirm } = req.body;
-
-  // Check if email was verified in session
-  if (
-    !req.session.otpData ||
-    req.session.otpData.email !== email ||
-    !req.session.otpData.verified
-  ) {
-    req.flash("error", "Please verify your email first!");
-    return res.redirect("/signup");
-  }
-
   if (password !== confirm) {
     req.flash("error", "Passwords do not match!");
     return res.redirect("/signup");
   }
-
   const existingEmailUser = await User.findOne({ email });
   if (existingEmailUser) {
     req.flash("error", "Email already exists. Please log in!");
     return res.redirect("/login");
   }
 
-  // Create user with verified email
-  const newUser = new User({ email, username, isEmailVerified: true });
+  const newUser = new User({ email, username });
   const registeredUser = await User.register(newUser, password);
 
-  // Send welcome email
-  try {
-    await sendWelcomeEmail(email, username);
-    console.log(`✅ Welcome email sent to ${email}`);
-  } catch (emailError) {
-    console.error("Error sending welcome email:", emailError);
-    // Continue even if welcome email fails
-  }
+  // UI MODE: Auto-verify email instead of sending verification email
+  registeredUser.isEmailVerified = true; // Automatically verify
+  console.log(`📧 [UI-MODE] Auto-verified email for new user: ${email}`);
+  await registeredUser.save();
 
-  // Clear OTP session data
-  delete req.session.otpData;
-
-  // Log in the user
-  const redirectUrl = req.session.redirectUrl || "/listings";
+  redirectUrl = req.session.redirectUrl || "/listings";
   req.login(registeredUser, (err) => {
     if (err) {
       return next(err);
     }
-    req.flash("success", "Welcome to Joya! Your account has been created.");
+
+    req.flash(
+      "success",
+      "Welcome to Joya! Your account has been created and verified."
+    );
     res.redirect(redirectUrl);
   });
 };

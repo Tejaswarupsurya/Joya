@@ -29,12 +29,6 @@ router
   .get(storeRedirectUrl, userController.renderSignupForm)
   .post(validateSignup, wrapAsync(userController.signup));
 
-//send signup OTP
-router.post("/send-signup-otp", wrapAsync(userController.sendSignupOTP));
-
-//verify signup OTP
-router.post("/verify-signup-otp", wrapAsync(userController.verifySignupOTP));
-
 //login
 router
   .route("/login")
