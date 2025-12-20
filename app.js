@@ -142,26 +142,6 @@ app.use("/", adminRouter);
 app.use("/", hostRouter);
 app.use("/", userRouter);
 
-const { Resend } = require("resend");
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-app.get("/__email_test__", async (req, res) => {
-  try {
-    const result = await resend.emails.send({
-      from: process.env.EMAIL_FROM,
-      to: process.env.EMAIL_TO,
-      subject: "EC2 Email Test ✅",
-      html: "<h2>Email works from EC2 🎉</h2>",
-    });
-
-    res.json({ success: true, result });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
 app.all(/.*/, (req, res, next) => {
   next(new ExpressError(404, "Page not found!"));
 });
