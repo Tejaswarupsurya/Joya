@@ -14,6 +14,7 @@ const {
   facilityIcons,
 } = require("../utils/constants.js");
 const { getAvgRating, getStarBreakdown } = require("../utils/review.js");
+const { expandQuery } = require("../utils/searchSynonyms.js");
 
 //mongodb Section
 const Listing = require("../models/listing.js");
@@ -23,9 +24,9 @@ module.exports.index = async (req, res) => {
   let filter = {};
   let sort = {};
 
-  // Enhanced search logic
+  // Enhanced search logic with synonym expansion
   if (q && q.trim()) {
-    const searchTerm = q.trim();
+    const searchTerm = expandQuery(q.trim());
     const words = searchTerm.split(/\s+/).filter((word) => word.length > 0);
 
     // Create flexible search patterns
