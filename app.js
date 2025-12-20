@@ -142,25 +142,6 @@ app.use("/", adminRouter);
 app.use("/", hostRouter);
 app.use("/", userRouter);
 
-app.all(/.*/, (req, res, next) => {
-  next(new ExpressError(404, "Page not found!"));
-});
-
-app.use((err, req, res, next) => {
-  let { statusCode = 500, message = "Something went wrong" } = err;
-  res.status(statusCode).render("error.ejs", { message });
-});
-
-// Export app for testing
-module.exports = app;
-
-// Only start server if not in test mode
-if (process.env.NODE_ENV !== "test") {
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
-}
-
 const { Resend } = require("resend");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -180,4 +161,25 @@ app.get("/__email_test__", async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
+app.all(/.*/, (req, res, next) => {
+  next(new ExpressError(404, "Page not found!"));
+});
+
+app.use((err, req, res, next) => {
+  let { statusCode = 500, message = "Something went wrong" } = err;
+  res.status(statusCode).render("error.ejs", { message });
+});
+
+// Export app for testing
+module.exports = app;
+
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== "test") {
+  app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
+}
+
+
 

@@ -1,7 +1,5 @@
 const cloudinary = require("cloudinary").v2;
 
-// `multer-storage-cloudinary` export shape can vary by version/bundling.
-// Support both: { CloudinaryStorage } and default export.
 const multerStorageCloudinary = require("multer-storage-cloudinary");
 const CloudinaryStorage =
   multerStorageCloudinary.CloudinaryStorage || multerStorageCloudinary;
