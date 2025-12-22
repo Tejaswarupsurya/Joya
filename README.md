@@ -35,7 +35,7 @@
 
 **A production-ready travel accommodation platform featuring secure Stripe payments, real-time email notifications, interactive maps, CI/CD pipeline with GitHub Actions, and deployment on AWS EC2.**
 
-[🚀 AWS Live](http://44.223.41.189/) · [🌐 Render Demo](https://joya-acbg.onrender.com/) · [📝 Report Bug](https://github.com/Tejaswarupsurya/Joya/issues) · [💡 Request Feature](https://github.com/Tejaswarupsurya/Joya/issues)
+[🚀 AWS Live](http://44.223.41.189/) · [📝 Report Bug](https://github.com/Tejaswarupsurya/Joya/issues) · [💡 Request Feature](https://github.com/Tejaswarupsurya/Joya/issues)
 
 </div>
 
