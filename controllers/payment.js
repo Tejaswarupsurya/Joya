@@ -1,6 +1,8 @@
 const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
+const User = require("../models/user.js");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const { sendBookingConfirmedEmail } = require("../utils/emailService.js");
 
 // Create Stripe Checkout Session
 module.exports.createCheckoutSession = async (req, res) => {
@@ -166,6 +168,25 @@ module.exports.stripeWebhook = async (req, res) => {
         `✅ Payment confirmed! Booking ${booking._id} status: CONFIRMED`
       );
       console.log(`💰 Payment Intent: ${session.payment_intent}`);
+
+      // Send booking confirmation email
+      try {
+        const user = await User.findById(booking.user);
+        const listing = await Listing.findById(booking.listing);
+
+        if (user && listing) {
+          await sendBookingConfirmedEmail(
+            user.email,
+            user.username,
+            booking,
+            listing
+          );
+          console.log(`📧 Booking confirmation email sent to ${user.email}`);
+        }
+      } catch (emailError) {
+        console.error("Failed to send booking confirmation email:", emailError);
+        // Don't fail the webhook if email fails
+      }
     } catch (error) {
       console.error("Error processing webhook:", error);
       return res.status(500).json({ error: "Webhook processing failed" });

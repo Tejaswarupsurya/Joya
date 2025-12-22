@@ -39,8 +39,6 @@ const userSchema = new Schema(
     host: { type: HostSubSchema, default: () => ({}) },
     wishlist: [{ type: Schema.Types.ObjectId, ref: "Listing" }],
     notifications: [{ type: Schema.Types.ObjectId, ref: "Notification" }],
-    resetCode: String,
-    resetCodeExpires: Date,
     isEmailVerified: { type: Boolean, default: true }, // Auto-verify in UI mode
   },
   { timestamps: true }

@@ -4,7 +4,12 @@ const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
 
 // Email & JWT utilities
-const { sendOTPEmail, sendWelcomeEmail } = require("../utils/emailService.js");
+const {
+  sendOTPEmail,
+  sendWelcomeEmail,
+  sendPasswordResetEmail,
+  sendPasswordUpdatedEmail,
+} = require("../utils/emailService.js");
 const {
   generateOTP,
   generateOTPToken,
@@ -182,6 +187,61 @@ module.exports.resendOTP = async (req, res) => {
   }
 };
 
+// Resend OTP for forgot password (JSON response for frontend fetch)
+module.exports.resendForgotOTP = async (req, res) => {
+  try {
+    const { username, email } = req.body;
+    const user = await User.findOne({ username, email });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found." });
+    }
+
+    // Check cooldown if session exists
+    if (req.session.passwordReset?.otpIssuedAt) {
+      if (!canResendOTP(req.session.passwordReset.otpIssuedAt)) {
+        const remaining = getRemainingCooldown(
+          req.session.passwordReset.otpIssuedAt
+        );
+        return res.status(429).json({
+          success: false,
+          error: `Please wait ${remaining} seconds before requesting again.`,
+        });
+      }
+    }
+
+    // Generate 6-digit OTP and JWT token
+    const otp = generateOTP();
+    const otpToken = generateOTPToken(email, otp);
+
+    // Store in session (same as signup flow)
+    req.session.passwordReset = {
+      username,
+      email,
+      otpToken,
+      otpIssuedAt: Date.now(),
+    };
+
+    // Send OTP via email
+    await sendPasswordResetEmail(email, otp, username);
+
+    console.log(`📧 Password reset OTP sent to ${email}`);
+
+    // Return success message (OTP sent via email)
+    return res.json({
+      success: true,
+      message: "Password reset code sent to your email!",
+      expiresIn: 600,
+    });
+  } catch (error) {
+    console.error("Error generating OTP:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to send reset code. Please try again.",
+    });
+  }
+};
+
 module.exports.renderLoginForm = (req, res) => {
   res.render("./users/login.ejs");
 };
@@ -198,21 +258,33 @@ module.exports.renderUpdateForm = (req, res) => {
 };
 
 module.exports.update = async (req, res) => {
-  const { currentPassword, password, confirm } = req.body;
-  const user = await User.findById(req.user._id);
-  const isMatch = await user.authenticate(currentPassword);
-  if (!isMatch.user) {
-    req.flash("error", "Current password is incorrect!");
-    return res.redirect("/update-password");
+  try {
+    const { currentPassword, password, confirm } = req.body;
+    const user = await User.findById(req.user._id);
+    const isMatch = await user.authenticate(currentPassword);
+    if (!isMatch.user) {
+      req.flash("error", "Current password is incorrect!");
+      return res.redirect("/update-password");
+    }
+    if (password !== confirm) {
+      req.flash("error", "Passwords do not match!");
+      return res.redirect("/update-password");
+    }
+    await user.setPassword(password);
+    await user.save();
+
+    // Send password updated confirmation email (non-blocking)
+    sendPasswordUpdatedEmail(user.email, user.username).catch((err) =>
+      console.error("Password updated email failed:", err)
+    );
+
+    req.flash("success", "Password updated successfully!");
+    res.redirect("/listings");
+  } catch (error) {
+    console.error("Password update error:", error);
+    req.flash("error", "Failed to update password. Please try again.");
+    res.redirect("/update-password");
   }
-  if (password !== confirm) {
-    req.flash("error", "Passwords do not match!");
-    return res.redirect("/update-password");
-  }
-  await user.setPassword(password);
-  await user.save();
-  req.flash("success", "Password updated successfully!");
-  res.redirect("/listings");
 };
 
 module.exports.renderForgotForm = (req, res) => {
@@ -481,54 +553,6 @@ const renderHostDashboard = async (req, res) => {
   }
 };
 
-// UI-based OTP generation (no email sending)
-module.exports.getCode = async (req, res) => {
-  try {
-    const { username, email } = req.body;
-    const user = await User.findOne({ username, email });
-
-    if (!user) {
-      return res.status(404).json({ success: false, error: "User not found." });
-    }
-
-    const now = Date.now();
-    if (
-      user.resetCodeExpires &&
-      user.resetCodeExpires > now &&
-      now - (user.resetCodeExpires - 10 * 60 * 1000) < 60 * 1000
-    ) {
-      return res.status(429).json({
-        success: false,
-        error: "Please wait 1 minute before requesting again.",
-      });
-    }
-
-    // Generate 6-digit OTP
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    user.resetCode = code;
-    user.resetCodeExpires = now + 10 * 60 * 1000; // 10 minutes
-    await user.save();
-
-    console.log(`📧 [UI-MODE] OTP for ${username} (${email}): ${code}`);
-
-    // Return OTP directly in response (no email sent)
-    return res.json({
-      success: true,
-      message: `Your reset code is: ${code}`,
-      code: code, // Show code directly
-      showInUI: true,
-      expiresIn: 600,
-      uiMessage: `🔐 Your Password Reset Code\n\n${code}\n\nThis code expires in 10 minutes.\n\nNote: In production, this would be sent to your email.`,
-    });
-  } catch (error) {
-    console.error("Error generating OTP:", error);
-    return res.status(500).json({
-      success: false,
-      error: "Server error occurred. Please try again later.",
-    });
-  }
-};
-
 // UI-based email verification (auto-verify)
 module.exports.sendVerification = async (req, res) => {
   try {
@@ -564,35 +588,66 @@ module.exports.sendVerification = async (req, res) => {
 
 // Password reset with code verification
 module.exports.forgot = async (req, res) => {
-  const { username, email, password, confirm, code } = req.body;
-  const user = await User.findOne({ username, email });
+  try {
+    const { username, email, password, confirm, code } = req.body;
 
-  if (!user) {
-    req.flash("error", "User not found!");
-    return res.redirect("/forgot");
+    // Check session data
+    if (!req.session.passwordReset) {
+      req.flash("error", "Session expired. Please request a new code.");
+      return res.redirect("/forgot");
+    }
+
+    const {
+      otpToken,
+      username: sessionUsername,
+      email: sessionEmail,
+    } = req.session.passwordReset;
+
+    // Verify username and email match session
+    if (username !== sessionUsername || email !== sessionEmail) {
+      req.flash("error", "Invalid credentials!");
+      return res.redirect("/forgot");
+    }
+
+    // Verify JWT token and OTP
+    const decoded = verifyOTPToken(otpToken);
+    if (!decoded || decoded.otp !== code) {
+      req.flash("error", "Invalid or expired OTP!");
+      return res.redirect("/forgot");
+    }
+
+    if (password !== confirm) {
+      req.flash("error", "Passwords do not match!");
+      return res.redirect("/forgot");
+    }
+
+    // Find and update user
+    const user = await User.findOne({ username, email });
+    if (!user) {
+      req.flash("error", "User not found!");
+      return res.redirect("/forgot");
+    }
+
+    await user.setPassword(password);
+    await user.save();
+
+    // Clear password reset session
+    req.session.passwordReset = null;
+
+    // Send password updated confirmation email (non-blocking)
+    sendPasswordUpdatedEmail(user.email, user.username).catch((err) =>
+      console.error("Password updated email failed:", err)
+    );
+
+    req.flash(
+      "success",
+      "Password has been reset successfully! Please log in."
+    );
+    req.session.redirectUrl = null;
+    res.redirect("/login");
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    req.flash("error", "Failed to reset password. Please try again.");
+    res.redirect("/forgot");
   }
-
-  if (!user.resetCode || !user.resetCodeExpires || user.resetCode !== code) {
-    req.flash("error", "Invalid or expired OTP!");
-    return res.redirect("/forgot");
-  }
-
-  if (Date.now() > user.resetCodeExpires) {
-    req.flash("error", "OTP expired. Please request a new one!");
-    return res.redirect("/forgot");
-  }
-
-  if (password !== confirm) {
-    req.flash("error", "Passwords do not match!");
-    return res.redirect("/forgot");
-  }
-
-  await user.setPassword(password);
-  user.resetCode = undefined;
-  user.resetCodeExpires = undefined;
-  await user.save();
-
-  req.flash("success", "Password has been reset. Please log in!");
-  req.session.redirectUrl = null;
-  res.redirect("/login");
 };

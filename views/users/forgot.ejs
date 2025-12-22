@@ -92,7 +92,7 @@
           >
         </small>
       </div>
-      
+
       <br /><br />
     </form>
   </div>
@@ -103,17 +103,59 @@
     setupPasswordValidation,
     setupEyeToggle,
   } from "/js/passwordUtils.js";
-  import { setupOtpHandler } from "/js/getCode.js";
+
   setupPasswordValidation({
     passwordId: "password",
     confirmId: "confirm",
     submitId: "submitBtn",
   });
   setupEyeToggle();
-  setupOtpHandler({
-    buttonId: "getCodeBtn",
-    usernameId: "username",
-    emailId: "email",
-    timerTextId: "timerText",
+
+  // Inline OTP handler (same pattern as signup)
+  const getCodeBtn = document.getElementById("getCodeBtn");
+  const usernameInput = document.getElementById("username");
+  const emailInput = document.getElementById("email");
+  const timerText = document.getElementById("timerText");
+
+  getCodeBtn.addEventListener("click", async () => {
+    const username = usernameInput.value.trim();
+    const email = emailInput.value.trim();
+
+    if (!username || !email) {
+      alert("Please enter username and email first.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/resend-forgot-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert(
+          `✅ ${data.message}\n\nPlease check your email for the 6-digit code.\n\nCode expires in 10 minutes.`
+        );
+
+        // Start 60s cooldown
+        let timeLeft = 60;
+        getCodeBtn.disabled = true;
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerText.textContent = `You can request OTP again in ${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            getCodeBtn.disabled = false;
+            timerText.textContent = "";
+          }
+        }, 1000);
+      } else {
+        alert(data.error || "Something went wrong.");
+      }
+    } catch (err) {
+      alert("Server error: " + err.message);
+    }
   });
 </script>

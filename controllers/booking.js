@@ -1,5 +1,7 @@
 ﻿const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
+const User = require("../models/user.js");
+const { sendBookingCancelledEmail } = require("../utils/emailService.js");
 
 module.exports.renderNewForm = async (req, res) => {
   const listing = await Listing.findById(req.params.id);
@@ -89,6 +91,24 @@ module.exports.cancelBooking = async (req, res) => {
 
   booking.status = "cancelled";
   await booking.save();
+
+  // Send booking cancellation email
+  try {
+    if (booking.user && booking.user.email && booking.listing) {
+      await sendBookingCancelledEmail(
+        booking.user.email,
+        booking.user.username,
+        booking,
+        booking.listing
+      );
+      console.log(
+        `📧 Booking cancellation email sent to ${booking.user.email}`
+      );
+    }
+  } catch (emailError) {
+    console.error("Failed to send booking cancellation email:", emailError);
+    // Don't fail the cancellation if email fails
+  }
 
   req.flash(
     "success",
