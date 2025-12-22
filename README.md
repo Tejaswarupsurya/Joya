@@ -912,7 +912,7 @@ This project is licensed under the **ISC License** - see the [LICENSE](LICENSE) 
 
 <div align="center">
 
-**Tejaswaru Surya**
+**Tejaswarup Surya**
 
 [![GitHub](https://img.shields.io/badge/GitHub-@Tejaswarupsurya-181717?style=for-the-badge&logo=github)](https://github.com/Tejaswarupsurya)
 
