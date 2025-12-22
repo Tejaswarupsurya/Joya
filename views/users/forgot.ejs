@@ -28,13 +28,9 @@
       </div>
 
       <div class="d-flex align-items-center mb-3">
-        <form method="POST" action="/send-forgot-otp" style="display: inline">
-          <input type="hidden" name="username" id="hiddenUsername" />
-          <input type="hidden" name="email" id="hiddenEmail" />
-          <button type="submit" class="btn btn-dark me-3" id="getCodeBtn">
-            Get OTP
-          </button>
-        </form>
+        <button type="button" class="btn btn-dark me-3" id="getCodeBtn">
+          Get OTP
+        </button>
         <small id="timerText" class="text-muted"></small>
       </div>
 
@@ -115,24 +111,56 @@
   });
   setupEyeToggle();
 
-  // Copy values to hidden inputs before submitting OTP form
+  // Send OTP via fetch when clicking Get OTP button
   const getCodeBtn = document.getElementById("getCodeBtn");
   const usernameInput = document.getElementById("username");
   const emailInput = document.getElementById("email");
-  const hiddenUsername = document.getElementById("hiddenUsername");
-  const hiddenEmail = document.getElementById("hiddenEmail");
+  const timerText = document.getElementById("timerText");
 
-  getCodeBtn.parentElement.addEventListener("submit", (e) => {
+  getCodeBtn.addEventListener("click", async () => {
     const username = usernameInput.value.trim();
     const email = emailInput.value.trim();
 
     if (!username || !email) {
-      e.preventDefault();
       alert("Please enter username and email first.");
       return;
     }
 
-    hiddenUsername.value = username;
-    hiddenEmail.value = email;
+    try {
+      getCodeBtn.disabled = true;
+      getCodeBtn.textContent = "Sending...";
+
+      const res = await fetch("/send-forgot-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // Start 60s cooldown
+        let timeLeft = 60;
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerText.textContent = `You can request OTP again in ${timeLeft}s`;
+          getCodeBtn.textContent = `Wait ${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            getCodeBtn.disabled = false;
+            getCodeBtn.textContent = "Get OTP";
+            timerText.textContent = "";
+          }
+        }, 1000);
+      } else {
+        getCodeBtn.disabled = false;
+        getCodeBtn.textContent = "Get OTP";
+        alert(data.error || "Failed to send OTP. Please try again.");
+      }
+    } catch (err) {
+      getCodeBtn.disabled = false;
+      getCodeBtn.textContent = "Get OTP";
+      alert("Server error: " + err.message);
+    }
   });
 </script>

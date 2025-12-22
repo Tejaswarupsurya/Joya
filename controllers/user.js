@@ -187,15 +187,14 @@ module.exports.resendOTP = async (req, res) => {
   }
 };
 
-// Send OTP for forgot password (with flash message)
+// Send OTP for forgot password (JSON response for AJAX)
 module.exports.sendForgotOTP = async (req, res) => {
   try {
     const { username, email } = req.body;
     const user = await User.findOne({ username, email });
 
     if (!user) {
-      req.flash("error", "User not found.");
-      return res.redirect("/forgot");
+      return res.status(404).json({ success: false, error: "User not found." });
     }
 
     // Check cooldown if session exists
@@ -204,11 +203,10 @@ module.exports.sendForgotOTP = async (req, res) => {
         const remaining = getRemainingCooldown(
           req.session.passwordReset.otpIssuedAt
         );
-        req.flash(
-          "error",
-          `Please wait ${remaining} seconds before requesting again.`
-        );
-        return res.redirect("/forgot");
+        return res.status(429).json({
+          success: false,
+          error: `Please wait ${remaining} seconds before requesting again.`,
+        });
       }
     }
 
@@ -229,16 +227,17 @@ module.exports.sendForgotOTP = async (req, res) => {
 
     console.log(`📧 Password reset OTP sent to ${email}`);
 
-    // Flash success message and redirect back
-    req.flash(
-      "success",
-      "Password reset code sent to your email! Code expires in 10 minutes."
-    );
-    res.redirect("/forgot");
+    // Return success (silently - user will see cooldown timer)
+    return res.json({
+      success: true,
+      message: "OTP sent to your email!",
+    });
   } catch (error) {
     console.error("Error generating OTP:", error);
-    req.flash("error", "Failed to send reset code. Please try again.");
-    res.redirect("/forgot");
+    return res.status(500).json({
+      success: false,
+      error: "Failed to send reset code. Please try again.",
+    });
   }
 };
 
