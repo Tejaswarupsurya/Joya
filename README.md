@@ -1,4 +1,5 @@
-<img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,25,27&height=180&section=header&text=Joya&fontSize=80&fontColor=fff&fontAlignY=35&animation=fadeIn&desc=Discover%20•%20Host%20•%20Experience&descSize=20&descAlignY=55"/>
+<img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,25,27&height=180&section=header&text=Joya&fontSize=60&fontColor=fff&fontAlignY=35&animation=fadeIn&desc=Discover%20•%20Host%20•%20Experience&descSize=20&descAlignY=55"/>
+
 
 <div align="center">
 
@@ -835,27 +836,28 @@ docker restart joya-app
 
 ### 🏠 Home Page
 
-_Browse listings with category filters and search_
+<video controls src="Screenshots/mainpage.mp4" title="_Browse listings with category filters and search_"></video>
 
 ### 📋 Listing Detail
 
-_View property details with interactive map and reviews_
+<video controls src="Screenshots/listingview.mp4" title="_View property details with interactive map and reviews_"></video>
 
 ### 📅 Booking Flow
 
-_Select dates and proceed to Stripe checkout_
+<video controls src="Screenshots/bookingflow.mp4" title="_Select dates and proceed to Stripe checkout_"></video>
 
 ### 👤 User Dashboard
 
-_Manage bookings, wishlist, and reviews_
+<video controls src="Screenshots/userdashboard.mp4" title="_Manage bookings, wishlist, and reviews_"></video>
 
 ### 🏠 Host Dashboard
 
-_Manage your property listings_
+<video controls src="Screenshots/hostdasboard.mp4" title="_Manage your owned property listings_"></video>
+<video controls src="Screenshots/hostform.mp4" title="Fill Host form to become a HOST"></video>
 
 ### 🔧 Admin Panel
 
-_Approve hosts and manage platform_
+![_Approve hosts and manage platform_](Screenshots/admindashboard.png)
 
 </div>
 
