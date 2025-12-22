@@ -836,45 +836,29 @@ docker restart joya-app
 
 ### 🏠 Home Page
 
-https://github.com/user-attachments/assets/a4d0f3f3-8591-4c73-9dd3-f144de5f6121
+![mainpage](https://github.com/user-attachments/assets/daf155c5-fcd6-4bd9-9751-90bbe6ad17d3)
 
 ### 📋 Listing Detail
 
-
-https://github.com/user-attachments/assets/788b8127-c583-4a78-8be0-16871788a36b
-
+![listingview](https://github.com/user-attachments/assets/fc8db477-387c-43a0-b0f9-c03e6c4021f9)
 
 ### 📅 Booking Flow
 
-
-
-
-https://github.com/user-attachments/assets/d5d93667-7a4d-4b21-974f-dcf674162e70
-
+![bookingflow](https://github.com/user-attachments/assets/7f193222-d093-43eb-8e2d-58e633210607)
 
 ### 👤 User Dashboard
 
-
-
-https://github.com/user-attachments/assets/343e67a3-95db-4130-88dd-119965a4e51b
-
-
+![userdashboard](https://github.com/user-attachments/assets/b74e78e7-a0be-45bf-a0d0-89f871653ede)
 
 ### 🏠 Host Dashboard
 
+![hostdashboard](https://github.com/user-attachments/assets/cb311b7c-d79e-42b5-bfbf-2548ed28cf48)
 
-https://github.com/user-attachments/assets/d4de8c63-6bcf-4ff4-bc7c-80b28db22793
-
-
-
-https://github.com/user-attachments/assets/85e580e9-d074-49a5-9e3f-cd6e86a93573
-
-
-
+![hostform](https://github.com/user-attachments/assets/6af077ad-d48c-4b44-a852-ee13a16cc6e6)
 
 ### 🔧 Admin Panel
 
-<img width="1897" height="1036" alt="admindashboard" src="https://github.com/user-attachments/assets/eb62c99b-ca01-4140-a982-0a387cc50444" />
+<img width="500" height="500" alt="admindashboard" src="https://github.com/user-attachments/assets/eb62c99b-ca01-4140-a982-0a387cc50444" />
 
 
 </div>
