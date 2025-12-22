@@ -836,28 +836,46 @@ docker restart joya-app
 
 ### 🏠 Home Page
 
-<video controls src="Screenshots/mainpage.mp4" title="_Browse listings with category filters and search_"></video>
+https://github.com/user-attachments/assets/a4d0f3f3-8591-4c73-9dd3-f144de5f6121
 
 ### 📋 Listing Detail
 
-<video controls src="Screenshots/listingview.mp4" title="_View property details with interactive map and reviews_"></video>
+
+https://github.com/user-attachments/assets/788b8127-c583-4a78-8be0-16871788a36b
+
 
 ### 📅 Booking Flow
 
-<video controls src="Screenshots/bookingflow.mp4" title="_Select dates and proceed to Stripe checkout_"></video>
+
+
+
+https://github.com/user-attachments/assets/d5d93667-7a4d-4b21-974f-dcf674162e70
+
 
 ### 👤 User Dashboard
 
-<video controls src="Screenshots/userdashboard.mp4" title="_Manage bookings, wishlist, and reviews_"></video>
+
+
+https://github.com/user-attachments/assets/343e67a3-95db-4130-88dd-119965a4e51b
+
+
 
 ### 🏠 Host Dashboard
 
-<video controls src="Screenshots/hostdasboard.mp4" title="_Manage your owned property listings_"></video>
-<video controls src="Screenshots/hostform.mp4" title="Fill Host form to become a HOST"></video>
+
+https://github.com/user-attachments/assets/d4de8c63-6bcf-4ff4-bc7c-80b28db22793
+
+
+
+https://github.com/user-attachments/assets/85e580e9-d074-49a5-9e3f-cd6e86a93573
+
+
+
 
 ### 🔧 Admin Panel
 
-![_Approve hosts and manage platform_](Screenshots/admindashboard.png)
+<img width="1897" height="1036" alt="admindashboard" src="https://github.com/user-attachments/assets/eb62c99b-ca01-4140-a982-0a387cc50444" />
+
 
 </div>
 
