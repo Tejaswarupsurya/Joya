@@ -3,42 +3,183 @@ const User = require("../models/user.js");
 const Booking = require("../models/booking.js");
 const Listing = require("../models/listing.js");
 
+// Email & JWT utilities
+const { sendOTPEmail, sendWelcomeEmail } = require("../utils/emailService.js");
+const {
+  generateOTP,
+  generateOTPToken,
+  verifyOTPToken,
+  canResendOTP,
+  getRemainingCooldown,
+  OTP_EXPIRY,
+} = require("../utils/jwtHelper.js");
+
 module.exports.renderSignupForm = (req, res) => {
   res.render("./users/signup.ejs");
 };
 
 module.exports.signup = async (req, res) => {
-  let { username, email, password, confirm } = req.body;
-  if (password !== confirm) {
-    req.flash("error", "Passwords do not match!");
-    return res.redirect("/signup");
-  }
-  const existingEmailUser = await User.findOne({ email });
-  if (existingEmailUser) {
-    req.flash("error", "Email already exists. Please log in!");
-    return res.redirect("/login");
-  }
+  try {
+    let { username, email, password, confirm } = req.body;
 
-  const newUser = new User({ email, username });
-  const registeredUser = await User.register(newUser, password);
-
-  // UI MODE: Auto-verify email instead of sending verification email
-  registeredUser.isEmailVerified = true; // Automatically verify
-  console.log(`📧 [UI-MODE] Auto-verified email for new user: ${email}`);
-  await registeredUser.save();
-
-  redirectUrl = req.session.redirectUrl || "/listings";
-  req.login(registeredUser, (err) => {
-    if (err) {
-      return next(err);
+    // Validate passwords match
+    if (password !== confirm) {
+      req.flash("error", "Passwords do not match!");
+      return res.redirect("/signup");
     }
+
+    // Check if email already exists
+    const existingEmailUser = await User.findOne({ email });
+    if (existingEmailUser) {
+      req.flash("error", "Email already exists. Please log in!");
+      return res.redirect("/login");
+    }
+
+    // Generate OTP and create JWT token
+    const otp = generateOTP();
+    const otpToken = generateOTPToken(email, otp);
+
+    // Store user data and OTP token in session temporarily
+    req.session.pendingUser = {
+      username,
+      email,
+      password,
+      otpToken,
+      otpIssuedAt: Date.now(),
+    };
+
+    // Send OTP email
+    await sendOTPEmail(email, otp, username);
 
     req.flash(
       "success",
-      "Welcome to Joya! Your account has been created and verified."
+      `Verification code sent to ${email}. Please check your inbox.`
     );
-    res.redirect(redirectUrl);
+    res.redirect("/verify-email");
+  } catch (error) {
+    console.error("Signup error:", error);
+    req.flash("error", "Failed to send verification email. Please try again.");
+    res.redirect("/signup");
+  }
+};
+
+// Render email verification form
+module.exports.renderVerifyEmailForm = (req, res) => {
+  if (!req.session.pendingUser) {
+    req.flash("error", "No pending verification. Please sign up first.");
+    return res.redirect("/signup");
+  }
+
+  const { email, otpIssuedAt } = req.session.pendingUser;
+  const remainingTime =
+    OTP_EXPIRY - Math.floor((Date.now() - otpIssuedAt) / 1000);
+
+  if (remainingTime <= 0) {
+    delete req.session.pendingUser;
+    req.flash("error", "Verification code expired. Please sign up again.");
+    return res.redirect("/signup");
+  }
+
+  res.render("./users/verify-email.ejs", {
+    email,
+    remainingTime,
+    canResend: canResendOTP(otpIssuedAt),
   });
+};
+
+// Verify email with OTP
+module.exports.verifyEmail = async (req, res) => {
+  try {
+    const { otp } = req.body;
+
+    if (!req.session.pendingUser) {
+      req.flash("error", "Session expired. Please sign up again.");
+      return res.redirect("/signup");
+    }
+
+    const { username, email, password, otpToken } = req.session.pendingUser;
+
+    // Verify OTP token
+    const decoded = verifyOTPToken(otpToken);
+
+    if (!decoded) {
+      req.flash("error", "Verification code expired. Please try again.");
+      delete req.session.pendingUser;
+      return res.redirect("/signup");
+    }
+
+    // Check if OTP matches
+    if (decoded.otp !== otp) {
+      req.flash("error", "Invalid verification code. Please try again.");
+      return res.redirect("/verify-email");
+    }
+
+    // Create and register user
+    const newUser = new User({ email, username, isEmailVerified: true });
+    const registeredUser = await User.register(newUser, password);
+
+    // Clear pending user data
+    delete req.session.pendingUser;
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(email, username).catch((err) =>
+      console.error("Welcome email failed:", err)
+    );
+
+    // Auto-login user
+    const redirectUrl = req.session.redirectUrl || "/listings";
+    req.login(registeredUser, (err) => {
+      if (err) {
+        console.error("Auto-login error:", err);
+        req.flash("success", "Account created! Please log in.");
+        return res.redirect("/login");
+      }
+
+      req.flash("success", "Welcome to Joya! Your account has been verified.");
+      res.redirect(redirectUrl);
+    });
+  } catch (error) {
+    console.error("Email verification error:", error);
+    req.flash("error", "Verification failed. Please try again.");
+    res.redirect("/verify-email");
+  }
+};
+
+// Resend OTP
+module.exports.resendOTP = async (req, res) => {
+  try {
+    if (!req.session.pendingUser) {
+      req.flash("error", "Session expired. Please sign up again.");
+      return res.redirect("/signup");
+    }
+
+    const { username, email, otpIssuedAt } = req.session.pendingUser;
+
+    // Check cooldown
+    if (!canResendOTP(otpIssuedAt)) {
+      const remaining = getRemainingCooldown(otpIssuedAt);
+      req.flash("error", `Please wait ${remaining} seconds before resending.`);
+      return res.redirect("/verify-email");
+    }
+
+    // Generate new OTP
+    const otp = generateOTP();
+    const otpToken = generateOTPToken(email, otp);
+
+    // Update session
+    req.session.pendingUser.otpToken = otpToken;
+    req.session.pendingUser.otpIssuedAt = Date.now();
+
+    // Send new OTP email
+    await sendOTPEmail(email, otp, username);
+
+    req.flash("success", "New verification code sent to your email!");
+    res.redirect("/verify-email");
+  } catch (error) {
+    console.error("Resend OTP error:", error);
+    req.flash("error", "Failed to resend code. Please try again.");
+    res.redirect("/verify-email");
+  }
 };
 
 module.exports.renderLoginForm = (req, res) => {

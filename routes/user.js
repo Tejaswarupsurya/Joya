@@ -29,6 +29,14 @@ router
   .get(storeRedirectUrl, userController.renderSignupForm)
   .post(validateSignup, wrapAsync(userController.signup));
 
+// Email verification routes
+router
+  .route("/verify-email")
+  .get(userController.renderVerifyEmailForm)
+  .post(wrapAsync(userController.verifyEmail));
+
+router.post("/resend-otp", wrapAsync(userController.resendOTP));
+
 //login
 router
   .route("/login")
