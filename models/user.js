@@ -39,7 +39,7 @@ const userSchema = new Schema(
     host: { type: HostSubSchema, default: () => ({}) },
     wishlist: [{ type: Schema.Types.ObjectId, ref: "Listing" }],
     notifications: [{ type: Schema.Types.ObjectId, ref: "Notification" }],
-    isEmailVerified: { type: Boolean, default: true }, // Auto-verify in UI mode
+    isEmailVerified: { type: Boolean, default: true }, // Set to true after OTP verification
   },
   { timestamps: true }
 );

@@ -314,11 +314,10 @@ module.exports.changeEmail = async (req, res) => {
 
   // Update email and auto-verify (no email sending required)
   user.email = newEmail;
-  user.isEmailVerified = true; // Auto-verify in UI mode
-  console.log(`📧 [UI-MODE] Auto-verified new email: ${newEmail}`);
+  user.isEmailVerified = true;
   await user.save();
 
-  req.flash("success", "Email updated and automatically verified!");
+  req.flash("success", "Email updated Successfully!");
   res.redirect("/dashboard");
 };
 
@@ -549,39 +548,6 @@ const renderHostDashboard = async (req, res) => {
       "Failed to load host dashboard. Error: " + error.message
     );
     res.redirect("/listings");
-  }
-};
-
-// UI-based email verification (auto-verify)
-module.exports.sendVerification = async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id);
-
-    if (user.isEmailVerified) {
-      return res.json({
-        success: false,
-        error: "Email already verified",
-      });
-    }
-
-    // Auto-verify the user in UI mode
-    user.isEmailVerified = true;
-    await user.save();
-
-    console.log(`📧 [UI-MODE] Auto-verified email for user: ${user.email}`);
-
-    return res.json({
-      success: true,
-      message: "Email automatically verified!",
-      autoVerified: true,
-      showInUI: true,
-    });
-  } catch (error) {
-    console.error("Error in sendVerification:", error);
-    return res.status(500).json({
-      success: false,
-      error: "Server error occurred. Please try again later.",
-    });
   }
 };
 
