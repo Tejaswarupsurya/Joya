@@ -149,7 +149,7 @@
             <i class="bi bi-clock"></i>
           </div>
           <div class="stat-number pending"><%= stats.pending %></div>
-          <p class="stat-label">Awaiting Decision</p>
+          <p class="stat-label">Payment Pending</p>
         </div>
       </div>
       <div class="col-lg-3 col-md-6">
@@ -249,17 +249,17 @@
   </div>
   <% } %>
 
-  <!-- Pending Bookings -->
+  <!-- Pending Payment Bookings -->
   <% if (bookings.pending.length > 0) { %>
   <div class="mb-5">
     <h2 class="section-title">
       <i class="bi bi-clock me-3 section-icon-pending"></i>
-      Awaiting Your Decision
+      Payment Pending
     </h2>
     <div class="alert-modern">
       <i class="bi bi-info-circle me-2"></i>
-      <strong>Action Required:</strong> These bookings need host confirmation
-      within 24 hours. Don't miss out on your dream destinations!
+      <strong>Action Required:</strong> Complete payment for these bookings
+      within 24 hours or they will expire automatically.
     </div>
     <div class="row g-4">
       <% bookings.pending.forEach((booking) => { %>
@@ -370,7 +370,9 @@
               href="/listings/<%= booking.listing._id %>/bookings/<%= booking._id %>"
               class="btn w-100 <%= isExpiringSoon ? 'btn-warning' : 'btn-pending-action' %>"
             >
-              <i class="bi bi-hand-thumbs-up me-2"></i><%= isExpiringSoon?'Waiting for confirmation (Urgent!)' : 'Waiting foryourconfirmation' %>
+              <i class="bi bi-hand-thumbs-up me-2"></i><%=
+              isExpiringSoon?'Waiting for confirmation (Urgent!)' : 'Waiting
+              foryourconfirmation' %>
             </a>
             <% } %>
           </div>
@@ -438,7 +440,9 @@
                 <div>
                   <small class="text-muted d-block">Guests</small>
                   <strong
-                    ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' : 'Guests' %></strong>
+                    ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' :
+                    'Guests' %></strong
+                  >
                 </div>
               </div>
             </div>
@@ -548,7 +552,9 @@
                   <div>
                     <small class="text-muted d-block">Guests</small>
                     <strong class="text-muted"
-                      ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest' : 'Guests' %></strong>
+                      ><%= booking.guests %> <%= booking.guests === 1 ? 'Guest'
+                      : 'Guests' %></strong
+                    >
                   </div>
                 </div>
               </div>

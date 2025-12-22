@@ -187,14 +187,15 @@ module.exports.resendOTP = async (req, res) => {
   }
 };
 
-// Resend OTP for forgot password (JSON response for frontend fetch)
-module.exports.resendForgotOTP = async (req, res) => {
+// Send OTP for forgot password (with flash message)
+module.exports.sendForgotOTP = async (req, res) => {
   try {
     const { username, email } = req.body;
     const user = await User.findOne({ username, email });
 
     if (!user) {
-      return res.status(404).json({ success: false, error: "User not found." });
+      req.flash("error", "User not found.");
+      return res.redirect("/forgot");
     }
 
     // Check cooldown if session exists
@@ -203,10 +204,11 @@ module.exports.resendForgotOTP = async (req, res) => {
         const remaining = getRemainingCooldown(
           req.session.passwordReset.otpIssuedAt
         );
-        return res.status(429).json({
-          success: false,
-          error: `Please wait ${remaining} seconds before requesting again.`,
-        });
+        req.flash(
+          "error",
+          `Please wait ${remaining} seconds before requesting again.`
+        );
+        return res.redirect("/forgot");
       }
     }
 
@@ -227,18 +229,16 @@ module.exports.resendForgotOTP = async (req, res) => {
 
     console.log(`📧 Password reset OTP sent to ${email}`);
 
-    // Return success message (OTP sent via email)
-    return res.json({
-      success: true,
-      message: "Password reset code sent to your email!",
-      expiresIn: 600,
-    });
+    // Flash success message and redirect back
+    req.flash(
+      "success",
+      "Password reset code sent to your email! Code expires in 10 minutes."
+    );
+    res.redirect("/forgot");
   } catch (error) {
     console.error("Error generating OTP:", error);
-    return res.status(500).json({
-      success: false,
-      error: "Failed to send reset code. Please try again.",
-    });
+    req.flash("error", "Failed to send reset code. Please try again.");
+    res.redirect("/forgot");
   }
 };
 
@@ -384,8 +384,8 @@ module.exports.renderDashboard = async (req, res) => {
         new Date(booking.checkOut) <= new Date()
     );
 
-    const pendingBookings = bookings.filter(
-      (booking) => booking.status === "pending"
+    const pendingPaymentBookings = bookings.filter(
+      (booking) => booking.status === "pending_payment"
     );
 
     const expiredBookings = bookings.filter(
@@ -401,7 +401,7 @@ module.exports.renderDashboard = async (req, res) => {
       total: bookings.length,
       active: activeBookings.length,
       completed: pastBookings.length,
-      pending: pendingBookings.length,
+      pending: pendingPaymentBookings.length,
       cancelled: cancelledBookings.length + expiredBookings.length, // Include expired in cancelled stats
     };
 
@@ -428,7 +428,7 @@ module.exports.renderDashboard = async (req, res) => {
       bookings: {
         active: activeBookings,
         past: pastBookings,
-        pending: pendingBookings,
+        pending: pendingPaymentBookings,
         cancelled: cancelledBookings,
         expired: expiredBookings, // Add expired bookings
       },
@@ -485,8 +485,8 @@ const renderHostDashboard = async (req, res) => {
         booking.status === "confirmed" && new Date(booking.checkOut) <= now
     );
 
-    const pendingBookings = bookings.filter(
-      (booking) => booking.status === "pending"
+    const pendingPaymentBookings = bookings.filter(
+      (booking) => booking.status === "pending_payment"
     );
 
     const thisMonthBookings = bookings.filter(
@@ -521,7 +521,7 @@ const renderHostDashboard = async (req, res) => {
     const stats = {
       totalListings: listings.length,
       activeBookings: activeBookings.length,
-      pendingBookings: pendingBookings.length,
+      pendingBookings: pendingPaymentBookings.length,
       completedBookings: completedBookings.length,
       totalEarnings,
       monthlyEarnings,
@@ -537,7 +537,7 @@ const renderHostDashboard = async (req, res) => {
       listings,
       bookings: {
         active: activeBookings,
-        pending: pendingBookings,
+        pending: pendingPaymentBookings,
         completed: completedBookings,
         recent: recentActivities,
       },

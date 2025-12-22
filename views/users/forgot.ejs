@@ -28,9 +28,13 @@
       </div>
 
       <div class="d-flex align-items-center mb-3">
-        <button type="button" class="btn btn-dark me-3" id="getCodeBtn">
-          Get OTP
-        </button>
+        <form method="POST" action="/send-forgot-otp" style="display: inline">
+          <input type="hidden" name="username" id="hiddenUsername" />
+          <input type="hidden" name="email" id="hiddenEmail" />
+          <button type="submit" class="btn btn-dark me-3" id="getCodeBtn">
+            Get OTP
+          </button>
+        </form>
         <small id="timerText" class="text-muted"></small>
       </div>
 
@@ -111,51 +115,24 @@
   });
   setupEyeToggle();
 
-  // Inline OTP handler (same pattern as signup)
+  // Copy values to hidden inputs before submitting OTP form
   const getCodeBtn = document.getElementById("getCodeBtn");
   const usernameInput = document.getElementById("username");
   const emailInput = document.getElementById("email");
-  const timerText = document.getElementById("timerText");
+  const hiddenUsername = document.getElementById("hiddenUsername");
+  const hiddenEmail = document.getElementById("hiddenEmail");
 
-  getCodeBtn.addEventListener("click", async () => {
+  getCodeBtn.parentElement.addEventListener("submit", (e) => {
     const username = usernameInput.value.trim();
     const email = emailInput.value.trim();
 
     if (!username || !email) {
+      e.preventDefault();
       alert("Please enter username and email first.");
       return;
     }
 
-    try {
-      const res = await fetch("/resend-forgot-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email }),
-      });
-
-      const data = await res.json();
-      if (data.success) {
-        alert(
-          `✅ ${data.message}\n\nPlease check your email for the 6-digit code.\n\nCode expires in 10 minutes.`
-        );
-
-        // Start 60s cooldown
-        let timeLeft = 60;
-        getCodeBtn.disabled = true;
-        const timer = setInterval(() => {
-          timeLeft--;
-          timerText.textContent = `You can request OTP again in ${timeLeft}s`;
-          if (timeLeft <= 0) {
-            clearInterval(timer);
-            getCodeBtn.disabled = false;
-            timerText.textContent = "";
-          }
-        }, 1000);
-      } else {
-        alert(data.error || "Something went wrong.");
-      }
-    } catch (err) {
-      alert("Server error: " + err.message);
-    }
+    hiddenUsername.value = username;
+    hiddenEmail.value = email;
   });
 </script>

@@ -65,8 +65,8 @@ router
   .get(userController.renderForgotForm)
   .post(validateReset, wrapAsync(userController.forgot));
 
-// Resend OTP for forgot password
-router.post("/resend-forgot-otp", wrapAsync(userController.resendForgotOTP));
+// Send OTP for forgot password
+router.post("/send-forgot-otp", wrapAsync(userController.sendForgotOTP));
 
 //send-verification (UI-based auto-verification)
 router.post("/send-verification", wrapAsync(userController.sendVerification));
