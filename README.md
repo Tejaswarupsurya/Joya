@@ -1,6 +1,5 @@
 <img width=100% src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=12,14,25,27&height=180&section=header&text=Joya&fontSize=60&fontColor=fff&fontAlignY=35&animation=fadeIn&desc=Discover%20•%20Host%20•%20Experience&descSize=20&descAlignY=55"/>
 
-
 <div align="center">
 
 ### 🏨 A Modern Full-Stack Travel Booking Platform
@@ -132,14 +131,14 @@ Swimming Pool • Pet Allowed • Wheelchair Accessible • Fire Safety
 
 ### 🔧 For Admins
 
-| Feature                      | Description                                     |
-| ---------------------------- | ----------------------------------------------- |
-| 👥 **User Management**       | View and manage all platform users              |
-| ✅ **Host Approvals**        | Review and approve/reject host applications     |
-| 📈 **Platform Analytics**    | Overview of listings, bookings, and users       |
-| 🔒 **Access Control**        | Role-based permission management                |
-| 🏠 **Listing Moderation**    | Edit or delete any listing on the platform      |
-| ⭐ **Review Moderation**     | Delete any review for content moderation        |
+| Feature                   | Description                                 |
+| ------------------------- | ------------------------------------------- |
+| 👥 **User Management**    | View and manage all platform users          |
+| ✅ **Host Approvals**     | Review and approve/reject host applications |
+| 📈 **Platform Analytics** | Overview of listings, bookings, and users   |
+| 🔒 **Access Control**     | Role-based permission management            |
+| 🏠 **Listing Moderation** | Edit or delete any listing on the platform  |
+| ⭐ **Review Moderation**  | Delete any review for content moderation    |
 
 ---
 
@@ -444,16 +443,16 @@ Joya/
 
 ### 👤 Authenticated User Routes
 
-| Method   | Route                             | Description                      |
-| -------- | --------------------------------- | -------------------------------- |
-| `GET`    | `/dashboard`                      | User dashboard                   |
-| `POST`   | `/listings/:id/reviews`           | Add review                       |
-| `DELETE` | `/listings/:id/reviews/:reviewId` | Delete review (Author or Admin)  |
-| `POST`   | `/wishlist/:id/add`               | Add to wishlist                  |
-| `DELETE` | `/wishlist/:id/remove`            | Remove from wishlist |
-| `GET`    | `/listings/:id/bookings/new`      | Booking form         |
-| `POST`   | `/listings/:id/bookings`          | Create booking       |
-| `POST`   | `/bookings/:id/cancel`            | Cancel booking       |
+| Method   | Route                             | Description                     |
+| -------- | --------------------------------- | ------------------------------- |
+| `GET`    | `/dashboard`                      | User dashboard                  |
+| `POST`   | `/listings/:id/reviews`           | Add review                      |
+| `DELETE` | `/listings/:id/reviews/:reviewId` | Delete review (Author or Admin) |
+| `POST`   | `/wishlist/:id/add`               | Add to wishlist                 |
+| `DELETE` | `/wishlist/:id/remove`            | Remove from wishlist            |
+| `GET`    | `/listings/:id/bookings/new`      | Booking form                    |
+| `POST`   | `/listings/:id/bookings`          | Create booking                  |
+| `POST`   | `/bookings/:id/cancel`            | Cancel booking                  |
 
 ### 💳 Payment Routes
 
@@ -466,11 +465,11 @@ Joya/
 
 ### 🏠 Host Routes (Requires Host Role)
 
-| Method   | Route                | Description       |
-| -------- | -------------------- | ----------------- |
-| `GET`    | `/host/dashboard`    | Host dashboard    |
-| `GET`    | `/listings/new`      | New listing form  |
-| `POST`   | `/listings`          | Create listing    |
+| Method   | Route                | Description                             |
+| -------- | -------------------- | --------------------------------------- |
+| `GET`    | `/host/dashboard`    | Host dashboard                          |
+| `GET`    | `/listings/new`      | New listing form                        |
+| `POST`   | `/listings`          | Create listing                          |
 | `GET`    | `/listings/:id/edit` | Edit listing form (Host owner or Admin) |
 | `PUT`    | `/listings/:id`      | Update listing (Host owner or Admin)    |
 | `DELETE` | `/listings/:id`      | Delete listing (Host owner or Admin)    |
@@ -717,9 +716,9 @@ jobs:
 
 ### 🏠 Live Deployments
 
-| Platform    | URL                                                      | Type            |
-| ----------- | -------------------------------------------------------- | --------------- |
-| **AWS EC2** | [http://44.223.41.189](http://44.223.41.189)             | Primary (CI/CD) |
+| Platform    | URL                                          | Type            |
+| ----------- | -------------------------------------------- | --------------- |
+| **AWS EC2** | [http://44.223.41.189](http://44.223.41.189) | Primary (CI/CD) |
 
 ### 🐳 Docker Multi-Stage Build
 
@@ -861,7 +860,6 @@ docker restart joya-app
 ### 🔧 Admin Panel
 
 <img width="500" height="500" alt="admindashboard" src="https://github.com/user-attachments/assets/eb62c99b-ca01-4140-a982-0a387cc50444" />
-
 
 </div>
 
