@@ -61,14 +61,14 @@
             class="btn btn-color btn-sm rounded-pill book-this-stay px-3 py-2 mt-3"
             >Book This Stay</a
           >
-          <% } else if (currUser.role === "user" || currUser.role === "admin") {
+          <% } else if (currUser.role === "user") {
           %>
           <a
             href="/listings/<%= listing._id %>/bookings/new"
             class="btn btn-color btn-sm rounded-pill book-this-stay px-3 py-2 mt-3"
-            >Book This Stay</a
-          >
-          <% } %> <% if(currUser && listing.owner._id.equals(currUser._id)) { %>
+            >Book This Stay
+          </a>
+          <% } %> <% if(currUser && listing.owner._id.equals(currUser._id) || currUser.role === "admin") { %>
           <div
             class="btns mt-3 mb-0 d-flex flex-column flex-md-row justify-content-end gap-3"
           >
@@ -76,8 +76,8 @@
               href="/listings/<%= listing._id %>/edit"
               class="btn btn-color"
               style="width: 100px"
-              >Edit</a
-            >
+              >Edit
+            </a>
             <form
               method="POST"
               action="/listings/<%= listing._id %>?_method=DELETE"
@@ -229,7 +229,7 @@
                 data-rating="<%=review.rating %>"
               ></p>
               <p class="card-text mb-2"><%= review.comment %></p>
-              <% if(currUser && review.author._id.equals(currUser._id)) { %>
+              <% if(currUser && review.author._id.equals(currUser._id) || currUser.role === "admin") { %>
               <form
                 class="mb-3"
                 method="POST"

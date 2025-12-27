@@ -177,7 +177,15 @@ module.exports.isDocOwner = (Model, field = "owner") => {
 
 module.exports.isHost = (req, res, next) => {
   if (!res.locals.currUser || res.locals.currUser.role !== "host") {
-    req.flash("error", "Only hosts can create listings!");
+    req.flash("error", "Only Hosts can create listings!");
+    return res.redirect("/listings");
+  }
+  next();
+};
+
+module.exports.isHostOrAdmin = (req, res, next) => {
+  if (!res.locals.currUser || res.locals.currUser.role === "user") {
+    req.flash("error", "Only Hosts or Admin have access!");
     return res.redirect("/listings");
   }
   next();
@@ -196,7 +204,10 @@ module.exports.canApplyAsHost = (req, res, next) => {
 module.exports.isOwner = async (req, res, next) => {
   let { id } = req.params;
   let listing = await Listing.findById(id);
-  if (!listing.owner.equals(res.locals.currUser._id)) {
+  if (
+    !listing.owner.equals(res.locals.currUser._id) &&
+    res.locals.currUser.role !== "admin"
+  ) {
     req.flash("error", "You don't have Access!");
     return res.redirect(`/listings/${id}`);
   }
@@ -206,8 +217,11 @@ module.exports.isOwner = async (req, res, next) => {
 module.exports.isReviewAuthor = async (req, res, next) => {
   let { id, reviewId } = req.params;
   let review = await Review.findById(reviewId);
-  if (!review.author.equals(res.locals.currUser._id)) {
-    req.flash("error", "You are'nt the Author of this Review!");
+  if (
+    !review.author.equals(res.locals.currUser._id) &&
+    res.locals.currUser.role !== "admin"
+  ) {
+    req.flash("error", "You aren't the Author of this Review!");
     return res.redirect(`/listings/${id}`);
   }
   next();

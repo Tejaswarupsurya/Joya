@@ -6,6 +6,7 @@ const {
   isLoggedIn,
   isOwner,
   isHost,
+  isHostOrAdmin,
   validateListing,
   fileFilter,
   checkRequiredFile,
@@ -49,7 +50,7 @@ router
   .get(wrapAsync(listingController.showListings))
   .put(
     isLoggedIn,
-    isHost,
+    isHostOrAdmin,
     isOwner,
     upload.single("listing[image]"),
     checkOptionalFile,
@@ -58,7 +59,7 @@ router
   )
   .delete(
     isLoggedIn,
-    isHost,
+    isHostOrAdmin,
     isOwner,
     wrapAsync(listingController.destroyListing)
   );
@@ -67,7 +68,7 @@ router
 router.get(
   "/:id/edit",
   isLoggedIn,
-  isHost,
+  isHostOrAdmin,
   isOwner,
   wrapAsync(listingController.renderEditForm)
 );

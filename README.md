@@ -132,12 +132,14 @@ Swimming Pool • Pet Allowed • Wheelchair Accessible • Fire Safety
 
 ### 🔧 For Admins
 
-| Feature                   | Description                                 |
-| ------------------------- | ------------------------------------------- |
-| 👥 **User Management**    | View and manage all platform users          |
-| ✅ **Host Approvals**     | Review and approve/reject host applications |
-| 📈 **Platform Analytics** | Overview of listings, bookings, and users   |
-| 🔒 **Access Control**     | Role-based permission management            |
+| Feature                      | Description                                     |
+| ---------------------------- | ----------------------------------------------- |
+| 👥 **User Management**       | View and manage all platform users              |
+| ✅ **Host Approvals**        | Review and approve/reject host applications     |
+| 📈 **Platform Analytics**    | Overview of listings, bookings, and users       |
+| 🔒 **Access Control**        | Role-based permission management                |
+| 🏠 **Listing Moderation**    | Edit or delete any listing on the platform      |
+| ⭐ **Review Moderation**     | Delete any review for content moderation        |
 
 ---
 
@@ -442,12 +444,12 @@ Joya/
 
 ### 👤 Authenticated User Routes
 
-| Method   | Route                             | Description          |
-| -------- | --------------------------------- | -------------------- |
-| `GET`    | `/dashboard`                      | User dashboard       |
-| `POST`   | `/listings/:id/reviews`           | Add review           |
-| `DELETE` | `/listings/:id/reviews/:reviewId` | Delete review        |
-| `POST`   | `/wishlist/:id/add`               | Add to wishlist      |
+| Method   | Route                             | Description                      |
+| -------- | --------------------------------- | -------------------------------- |
+| `GET`    | `/dashboard`                      | User dashboard                   |
+| `POST`   | `/listings/:id/reviews`           | Add review                       |
+| `DELETE` | `/listings/:id/reviews/:reviewId` | Delete review (Author or Admin)  |
+| `POST`   | `/wishlist/:id/add`               | Add to wishlist                  |
 | `DELETE` | `/wishlist/:id/remove`            | Remove from wishlist |
 | `GET`    | `/listings/:id/bookings/new`      | Booking form         |
 | `POST`   | `/listings/:id/bookings`          | Create booking       |
@@ -469,9 +471,9 @@ Joya/
 | `GET`    | `/host/dashboard`    | Host dashboard    |
 | `GET`    | `/listings/new`      | New listing form  |
 | `POST`   | `/listings`          | Create listing    |
-| `GET`    | `/listings/:id/edit` | Edit listing form |
-| `PUT`    | `/listings/:id`      | Update listing    |
-| `DELETE` | `/listings/:id`      | Delete listing    |
+| `GET`    | `/listings/:id/edit` | Edit listing form (Host owner or Admin) |
+| `PUT`    | `/listings/:id`      | Update listing (Host owner or Admin)    |
+| `DELETE` | `/listings/:id`      | Delete listing (Host owner or Admin)    |
 
 ### 🔧 Admin Routes (Requires Admin Role)
 
